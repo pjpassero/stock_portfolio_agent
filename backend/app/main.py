@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.routers import analyze
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
+from app.services.yahoo import get_company_data
 
 from app.routers import analyze
 
@@ -31,3 +32,11 @@ def home():
         </body>
     </html>
     """
+
+@app.get("/get_ticker_details/{ticker}")
+def ticker_details(ticker:str):
+    info = get_company_data(ticker)
+    return {
+        "ticker": ticker.upper(),
+        "price": info["currentPrice"]
+    }

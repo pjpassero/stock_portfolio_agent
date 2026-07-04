@@ -1,13 +1,18 @@
 const API_URL = "http://localhost:8000";
 
-export async function analyzeTicker(ticker: string) {
+export async function getTicker(ticker: string) {
+
     const response = await fetch(
-        `${API_URL}/analyze/${ticker}`
+        `http://localhost:8000/get_ticker_details/${ticker}`
     );
 
     if (!response.ok) {
-        throw new Error("Failed to analyze ticker.");
+        throw new Error("Request failed");
     }
 
-    return response.json();
+    const data = await response.json();
+
+    console.log(data);
+
+    return data;
 }
