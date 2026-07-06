@@ -1,3 +1,5 @@
+import type { Position } from "../types/Position";
+
 const API_URL = "http://localhost:8000";
 
 export async function getTicker(ticker: string) {
@@ -15,4 +17,18 @@ export async function getTicker(ticker: string) {
     console.log(data);
 
     return data;
+}
+
+export async function analyzePortfolio(portfolio: Position[]) {
+    const response = await fetch(
+        `${API_URL}/portfolio/analyze`, {
+        method: "POSt",
+        headers: {
+            "content-type": "application/json",
+        },
+        body: JSON.stringify(portfolio),
+
+    }
+    )
+    return await response.json();
 }

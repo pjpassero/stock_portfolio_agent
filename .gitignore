@@ -5,6 +5,7 @@ env/
 
 __pycache__
 tempFront.txt
+tempState.txt
 # Logs
 logs
 *.log

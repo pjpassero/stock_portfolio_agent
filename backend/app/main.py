@@ -3,9 +3,9 @@ from app.routers import analyze
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.services.yahoo import get_company_data
-
+from app.models.position import Position
 from app.routers import analyze
-
+from app.graph import app_graph
 
 app = FastAPI()
 
@@ -20,6 +20,8 @@ app.add_middleware(
 )
 
 app.include_router(analyze.router)
+
+
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -40,3 +42,17 @@ def ticker_details(ticker:str):
         "ticker": ticker.upper(),
         "price": info["currentPrice"]
     }
+
+@app.post("/portfolio/analyze")
+def analyze_portfolio(portfolio: list[Position]):
+
+    for stock in portfolio:
+        print(stock.ticker)
+        print(stock.shares)
+        print(stock.costBasis)
+
+    result = app_graph.invoke({
+        "portfolio": portfolio
+    })
+    print(result)
+    return result
