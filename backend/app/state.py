@@ -7,4 +7,7 @@ class State(TypedDict):
     portfolio:list[Position]
     portfolioExpanded:list[PositionExpanded]
     response:str
+    sectors:list[str]
+    matrixIdentifier:str
+
 
