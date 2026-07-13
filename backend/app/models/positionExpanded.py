@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
+from pathlib import Path
 
 
 class PositionExpanded(BaseModel):
@@ -25,4 +26,4 @@ class PositionExpanded(BaseModel):
 
     fifty_two_week_change: Optional[float] = None
 
-    historicalDataPath: str
+    historicalDataPath: Path

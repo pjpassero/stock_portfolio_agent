@@ -6,6 +6,16 @@ from app.services.yahoo import get_company_data
 from app.models.position import Position
 from app.routers import analyze
 from app.graph import app_graph
+import os
+from dotenv import load_dotenv
+
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+dotenv_path = BASE_DIR / ".env"
+
+load_dotenv(BASE_DIR / ".env")
 
 app = FastAPI()
 

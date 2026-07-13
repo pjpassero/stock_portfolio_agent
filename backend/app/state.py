@@ -9,5 +9,6 @@ class State(TypedDict):
     response:str
     sectors:list[str]
     matrixIdentifier:str
+    returnsAddress:str
 
 
