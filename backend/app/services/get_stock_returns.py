@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "returns"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "temp" / "returnsMatricies"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 DATA_DIR_GET_TEST = Path(__file__).resolve().parent.parent / "data" / "history"
