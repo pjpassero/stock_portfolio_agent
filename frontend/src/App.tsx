@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Dashboard from "./pages/dashboard";
 import Portfolio from "./pages/enter_portfolio";
+import Results from "./pages/results";
 
 function App() {
 
@@ -13,8 +14,9 @@ function App() {
 
         <Route path="/" element={<Dashboard />} />
 
-        <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/enter_portfolio" element={<Portfolio />} />
 
+        <Route path="/results/:portfolioId" element={<Results />} />
       </Routes>
 
     </BrowserRouter>

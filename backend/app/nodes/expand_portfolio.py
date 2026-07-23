@@ -9,7 +9,6 @@ def expand_position_details(state: State):
 
     for position in state["portfolio"]:
         info = get_company_data(position.ticker)
-        print(info.keys())
         expanded_positions.append(
             PositionExpanded(
                 ticker=info["symbol"],
@@ -34,6 +33,8 @@ def expand_position_details(state: State):
                 return_on_equity=info.get("returnOnEquity"),
                 fifty_two_week_change=info.get("52WeekChange"),
                 historicalDataPath="NoSet",
+                allocation=position.shares * position.currentBasis / state["portfolioValue"],
+                costBasis = position.costBasis
             )
         )
 

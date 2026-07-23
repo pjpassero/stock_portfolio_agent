@@ -22,7 +22,7 @@ export async function getTicker(ticker: string) {
 export async function analyzePortfolio(portfolio: Position[]) {
     const response = await fetch(
         `${API_URL}/portfolio/analyze`, {
-        method: "POSt",
+        method: "POST",
         headers: {
             "content-type": "application/json",
         },
@@ -30,5 +30,12 @@ export async function analyzePortfolio(portfolio: Position[]) {
 
     }
     )
+    return await response.json();
+}
+
+export async function getPortfolio(portfolioId: string) {
+    const response = await fetch(`${API_URL}/getportfolio/${portfolioId}`);
+
+
     return await response.json();
 }

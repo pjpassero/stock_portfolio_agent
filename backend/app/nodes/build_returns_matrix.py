@@ -27,7 +27,7 @@ def build_returns_matrix(state:State) -> str:
 
         returnsMatrix.to_csv(save_path, index=False)
     return {
-            "returnsAddress":save_path
+            "returnMatrix":returnsMatrix
         }
 
 

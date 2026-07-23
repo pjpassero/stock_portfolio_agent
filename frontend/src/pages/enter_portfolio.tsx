@@ -2,6 +2,7 @@ import { useState } from "react";
 import { getTicker } from '../services/api'
 import { analyzePortfolio } from "../services/api";
 import type { Position } from "../types/Position";
+import { useNavigate } from "react-router-dom";
 
 
 export default function EnterPortfolio() {
@@ -11,6 +12,7 @@ export default function EnterPortfolio() {
     const [shareCount, setShareCount] = useState("");
     const [costBasis, setCostBasis] = useState("");
     const [response, setReponse] = useState("No Analysis Yet!");
+    const navigate = useNavigate();
 
 
 
@@ -49,8 +51,8 @@ export default function EnterPortfolio() {
             const result = await analyzePortfolio(portfolio);
             console.log(result);
             setReponse(result.response);
+            navigate(`/results/${result.portfolioId}`);
         }
-
 
     }
     return (
