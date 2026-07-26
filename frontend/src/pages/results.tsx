@@ -36,9 +36,9 @@ export default function Results() {
 
     return (
         <div className="container-fluid">
-            <div className="row justify-content-center">
+            <div className="row">
                 {portfolio.map((stock: any) => (
-                    <div className="col-md-10 mt-4" key={stock.ticker}>
+                    <div className="col-md-3 mt-4" key={stock.ticker}>
                         <div className="card">
                             <div className="card-body">
                                 <div className="card-title text-center">

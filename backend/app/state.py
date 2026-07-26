@@ -15,7 +15,10 @@ class State(TypedDict):
     covarianceMatrix:pd.DataFrame
     correlationMatrix:pd.DataFrame
     success:bool
-
+    hhi:float
+    sector_weights:list[float]
+    riskFreeRate:float
+    currentVix:float
     
 
 
