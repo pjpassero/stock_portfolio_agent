@@ -34,7 +34,8 @@ def expand_position_details(state: State):
                 fifty_two_week_change=info.get("52WeekChange"),
                 historicalDataPath="NoSet",
                 allocation=position.shares * position.currentBasis / state["portfolioValue"],
-                costBasis = position.costBasis
+                costBasis = position.costBasis,
+                shares = position.shares
             )
         )
 

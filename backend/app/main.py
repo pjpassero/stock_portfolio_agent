@@ -102,6 +102,16 @@ def analyze_portfolio(portfolio: list[Position]):
         "portfolioId":random_id
     })
     print(result)
+
+    for key, value in result.items():
+        try:
+            jsonable_encoder(value)
+            print(f"{key}: OK")
+        except Exception as e:
+            print(f"{key}: FAILED")
+            print(type(value))
+            raise
+
     json_result = jsonable_encoder(result)
 
     with get_connection() as conn:

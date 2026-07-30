@@ -2,6 +2,7 @@ from typing import TypedDict
 from app.models.position import Position
 from app.models.positionExpanded import PositionExpanded
 import pandas as pd 
+import numpy as np
 
 class State(TypedDict):
     portfolio:list[Position]
@@ -15,10 +16,14 @@ class State(TypedDict):
     covarianceMatrix:pd.DataFrame
     correlationMatrix:pd.DataFrame
     success:bool
-    hhi:float
-    sector_weights:list[float]
-    riskFreeRate:float
-    currentVix:float
-    
+    weights: np.ndarray
+    sectorWeights: dict[str, float]
+    hhi: float
+    meanReturns: np.ndarray
+    portfolioReturn: float
+    portfolioVariance: float
+    portfolioVolatility: float
+    sharpeRatio: float
+    portfolioBeta: float
 
 

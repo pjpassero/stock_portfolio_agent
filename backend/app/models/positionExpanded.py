@@ -6,6 +6,7 @@ from pathlib import Path
 class PositionExpanded(BaseModel):
     ticker: str
     company_name: str
+    shares:float
     sector: Optional[str] = None
     allocation:float
     industry: Optional[str] = None
