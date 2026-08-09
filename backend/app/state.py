@@ -21,9 +21,11 @@ class State(TypedDict):
     hhi: float
     meanReturns: np.ndarray
     portfolioReturn: float
+    portfolioBeta:float
     portfolioVariance: float
     portfolioVolatility: float
     sharpeRatio: float
     portfolioBeta: float
+    assetClasses:dict[str,float]
 
 

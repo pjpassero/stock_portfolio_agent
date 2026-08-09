@@ -47,6 +47,8 @@ def build_statistics(state: State):
         portfolio_return - risk_free
     ) / portfolio_volatility
 
+    
+    
     return {
         "weights": weights.tolist(),
         "sectorWeights": sector_weights,

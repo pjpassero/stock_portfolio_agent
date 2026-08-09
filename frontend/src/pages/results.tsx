@@ -193,12 +193,59 @@ export default function Results() {
                     </div>
                 </div>
             </div>
+            <div className="row">
+                <div className="col-md-6 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title">
+                                <h1>Statisitcal Analysis</h1>
+                            </div>
+                            <p>There are a few different statistics that were calculated for the
+                                portfolio.
+                            </p>
+                            {result && (
+                                <>
+                                    <p>Sharpe Ratio: {result.sharpeRatio.toFixed(3)}</p>
+                                    <p>HHI: {result.hhi.toFixed(3)}</p>
+                                    <p>Annualized Volatility: {(result.portfolioVolatility * 100).toFixed(3)}%</p>
+                                    <p>Expected Return: {(result.portfolioReturn * 100).toFixed(3)}%</p>
+                                    <p>Portfolio Beta: N/A%</p>
+                                </>
+                            )}
+
+
+
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-6 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title">
+                                <h1>Health Score</h1>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div className="row justify-content-center">
                 <div className="col-md-12 mt-4 text-center">
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
                             <div className="card-title">
-                                <h1>Chat Bot</h1>
+                                <h1>Detailed AI Analysis and Reccomendations</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row justify-content-center">
+                <div className="col-md-12 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title">
+                                <h1>Fintel "Fin" Bot</h1>
                             </div>
                         </div>
                     </div>

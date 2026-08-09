@@ -126,21 +126,7 @@ export default function EnterPortfolio() {
                     </div>
                 </div>
             </div>
-            <div className="row justify-content-center m-5">
-                <div className="col-md-12 justify-content-center">
-                    <div className="card">
-                        <div className="card-body justify-content-center text-jusitfy">
-                            <div className="card-title text-center">
-                                <h1>Analysis</h1>
-                            </div>
-                            <p>
-                                {response}
-                            </p>
-                        </div>
 
-                    </div>
-                </div>
-            </div>
 
         </div >
     );

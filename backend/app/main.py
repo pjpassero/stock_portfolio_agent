@@ -49,14 +49,17 @@ def home():
     """
 
 @app.get("/get_ticker_details/{ticker}")
-def ticker_details(ticker:str):
+def ticker_details(ticker: str):
     info = get_company_data(ticker)
+    price = (
+        info.get("currentPrice")
+        or info.get("regularMarketPrice")
+        or info.get("previousClose")
+    )
     return {
         "ticker": ticker.upper(),
-        "price": info["currentPrice"]
+        "price": price
     }
-
-
 @app.get("/getportfolio/{portfolio_id}")
 def get_portfolio(portfolio_id:str):
     print(portfolio_id)

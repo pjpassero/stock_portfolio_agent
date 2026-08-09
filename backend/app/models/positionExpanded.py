@@ -24,3 +24,4 @@ class PositionExpanded(BaseModel):
     return_on_equity: Optional[float] = None
     fifty_two_week_change: Optional[float] = None
     historicalDataPath: Path
+    assetClass:str
