@@ -8,6 +8,7 @@ from app.nodes.build_returns_matrix import build_returns_matrix
 from app.nodes.build_covariance_matrix import build_covariance_matrix
 from app.nodes.build_correlation_matrix import build_correlation_matrix
 from app.nodes.calculate_portfolio_statistics import build_statistics
+from app.nodes.calculate_score import calculate_score
 graph = StateGraph(State)
 
 
@@ -21,6 +22,7 @@ graph.add_node("build_returns_matrix", build_returns_matrix)
 graph.add_node("build_covariance_matrix", build_covariance_matrix)
 graph.add_node("build_correlation_matrix", build_correlation_matrix)
 graph.add_node("calculate_statistics", build_statistics)
+graph.add_node("calculate_score",calculate_score)
 
 #graph.add_edge(START, "get_stock_data")
 #graph.add_edge(START, "get_portfolio_response")
@@ -32,6 +34,7 @@ graph.add_edge("get_historical_data", "build_returns_matrix")
 graph.add_edge("build_returns_matrix", "build_covariance_matrix")
 graph.add_edge("build_covariance_matrix", "build_correlation_matrix")
 graph.add_edge("build_correlation_matrix", "calculate_statistics")
-graph.add_edge("calculate_statistics", END)
+graph.add_edge("calculate_statistics", "calculate_score")
+graph.add_edge("calculate_score", END)
 
 app_graph = graph.compile()

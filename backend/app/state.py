@@ -27,5 +27,8 @@ class State(TypedDict):
     sharpeRatio: float
     portfolioBeta: float
     assetClasses:dict[str,float]
+    sector_risk_score:float
+    sector_hhi:float
+    overall_stock_score:float
 
 

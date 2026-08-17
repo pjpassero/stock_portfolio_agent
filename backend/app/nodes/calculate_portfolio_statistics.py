@@ -48,7 +48,6 @@ def build_statistics(state: State):
     ) / portfolio_volatility
 
     
-    
     return {
         "weights": weights.tolist(),
         "sectorWeights": sector_weights,
@@ -58,4 +57,5 @@ def build_statistics(state: State):
         "portfolioReturn": float(portfolio_return),
         "portfolioVolatility": float(portfolio_volatility),
         "sharpeRatio": float(sharpe_ratio),
+        #"sector_hhi":float(sector_hhi)
     }
