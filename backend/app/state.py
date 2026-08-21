@@ -6,6 +6,8 @@ import numpy as np
 
 class State(TypedDict):
     portfolio:list[Position]
+    username:str
+    interpretation_level:str
     portfolioValue:int
     portfolioId:str
     portfolioExpanded:list[PositionExpanded]
@@ -30,5 +32,24 @@ class State(TypedDict):
     sector_risk_score:float
     sector_hhi:float
     overall_stock_score:float
-
+    assetClassBreakdown:dict[str,float]
+    stockHHI:float
+    stockPositions:list
+    etfPositions: list[PositionExpanded]
+    crypto_positions:list
+    stockWeight:float
+    etfWeight:float
+    cryptoWeight:float
+    cashWeight:float
+    stockInternalWeights: dict[str, float]
+    stockSectorWeights:dict[str,float]
+    stockRisk:float
+    stockVolatility:float
+    etfInternalWeights: dict[str, float]
+    etfHHI: float
+    etfVolatility: float
+    etfRisk: float
+    etfSectorWeights: dict[str, float]
+    etfSectorHHI: float
+    etfRisk: float
 

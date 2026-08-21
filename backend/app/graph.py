@@ -8,7 +8,9 @@ from app.nodes.build_returns_matrix import build_returns_matrix
 from app.nodes.build_covariance_matrix import build_covariance_matrix
 from app.nodes.build_correlation_matrix import build_correlation_matrix
 from app.nodes.calculate_portfolio_statistics import build_statistics
-from app.nodes.calculate_score import calculate_score
+from app.nodes.calculate_score_stocks import calculate_score
+from app.nodes.sort_assets import classify_assets
+from app.nodes.calculate_score_etf import calculate_etf_score
 graph = StateGraph(State)
 
 
@@ -23,14 +25,23 @@ graph.add_node("build_covariance_matrix", build_covariance_matrix)
 graph.add_node("build_correlation_matrix", build_correlation_matrix)
 graph.add_node("calculate_statistics", build_statistics)
 graph.add_node("calculate_score",calculate_score)
-
+graph.add_node("classify_assets", classify_assets)
+graph.add_node("calculate_etf_score",calculate_etf_score)
 #graph.add_edge(START, "get_stock_data")
 #graph.add_edge(START, "get_portfolio_response")
 #graph.add_edge("get_portfolio_response", END)
 
 graph.add_edge(START, "expand_details")
-graph.add_edge("expand_details", "get_historical_data")
+
+graph.add_edge("expand_details", "classify_assets")
+graph.add_edge("classify_assets", "get_historical_data")
 graph.add_edge("get_historical_data", "build_returns_matrix")
+graph.add_edge("build_returns_matrix", "build_covariance_matrix")
+graph.add_edge("build_covariance_matrix", "calculate_score")
+graph.add_edge("build_covariance_matrix", "calculate_etf_score")
+graph.add_edge("calculate_etf_score", END)
+
+
 graph.add_edge("build_returns_matrix", "build_covariance_matrix")
 graph.add_edge("build_covariance_matrix", "build_correlation_matrix")
 graph.add_edge("build_correlation_matrix", "calculate_statistics")

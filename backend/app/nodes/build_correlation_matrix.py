@@ -6,7 +6,12 @@ import pandas as pd
 
 def build_correlation_matrix(state: State):
     df = state["returnMatrix"]
-    df = df.drop(columns=["Date"])
+
+    df = df.drop(
+        columns=["Date", "CASH"],
+        errors="ignore"
+    )
+
     corr = df.corr()
 
     with get_connection() as conn:
@@ -17,7 +22,13 @@ def build_correlation_matrix(state: State):
             """
 
             rows = [
-                (state["portfolioId"], "correlation", a, b, float(corr.loc[a, b]))
+                (
+                    state["portfolioId"],
+                    "correlation",
+                    a,
+                    b,
+                    float(corr.loc[a, b])
+                )
                 for a in corr.index
                 for b in corr.columns
             ]

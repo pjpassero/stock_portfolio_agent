@@ -19,14 +19,18 @@ export async function getTicker(ticker: string) {
     return data;
 }
 
-export async function analyzePortfolio(portfolio: Position[]) {
+export async function analyzePortfolio(portfolio: Position[], username: string, level: string) {
     const response = await fetch(
         `${API_URL}/portfolio/analyze`, {
         method: "POST",
         headers: {
             "content-type": "application/json",
         },
-        body: JSON.stringify(portfolio),
+        body: JSON.stringify({
+            portfolio: portfolio,
+            username: username,
+            level: level
+        }),
 
     }
     )

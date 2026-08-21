@@ -13,7 +13,7 @@ from app.services.database_connector import get_connection
 from pathlib import Path
 from psycopg2.extras import Json
 from fastapi.encoders import jsonable_encoder
-
+from app.models.portfolioRequest import PortfolioRequest
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 dotenv_path = BASE_DIR / ".env"
@@ -50,16 +50,27 @@ def home():
 
 @app.get("/get_ticker_details/{ticker}")
 def ticker_details(ticker: str):
-    info = get_company_data(ticker)
-    price = (
-        info.get("currentPrice")
-        or info.get("regularMarketPrice")
-        or info.get("previousClose")
-    )
-    return {
-        "ticker": ticker.upper(),
-        "price": price
-    }
+
+    ticker = ticker.upper()
+    if(ticker == "CASH"):
+        return {
+                "ticker": ticker.upper(),
+                "price":"N/A"
+            }
+
+    else:
+        info = get_company_data(ticker)
+        price = (
+                info.get("currentPrice")
+                or info.get("regularMarketPrice")
+                or info.get("previousClose")
+            )
+        return {
+            "ticker": ticker.upper(),
+            "price": price
+         }
+    
+    
 @app.get("/getportfolio/{portfolio_id}")
 def get_portfolio(portfolio_id:str):
     print(portfolio_id)
@@ -75,7 +86,8 @@ def get_portfolio(portfolio_id:str):
             result = row[0]
     return result
 @app.post("/portfolio/analyze")
-def analyze_portfolio(portfolio: list[Position]):
+def analyze_portfolio(portfoliorequest:PortfolioRequest):
+    print(portfoliorequest)
     random_id = uuid.uuid4()
 
     with get_connection() as conn:
@@ -88,9 +100,9 @@ def analyze_portfolio(portfolio: list[Position]):
                 (random_id,),
             )
     conn.commit()
-    print(portfolio)
+    print(portfoliorequest.portfolio)
     totalPortfolioValue = 0.0
-    for stock in portfolio:
+    for stock in portfoliorequest.portfolio:
         print(stock.ticker)
         print(stock.shares)
         print(stock.costBasis)
@@ -100,9 +112,11 @@ def analyze_portfolio(portfolio: list[Position]):
 
 
     result = app_graph.invoke({
-        "portfolio": portfolio,
+        "portfolio": portfoliorequest.portfolio,
         "portfolioValue":totalPortfolioValue,
-        "portfolioId":random_id
+        "portfolioId":random_id,
+        "username":portfoliorequest.username,
+        "interpretation_level":portfoliorequest.level
     })
     print(result)
 
@@ -122,11 +136,13 @@ def analyze_portfolio(portfolio: list[Position]):
             cur.execute(
                 """
                 UPDATE portfolio
-                SET json_blob_temp = %s
+                SET json_blob_temp = %s, username=%s, interpretation_level=%s
                 WHERE id = %s
                 """,
                 (
                     Json(json_result),
+                    str(portfoliorequest.username),
+                    str(portfoliorequest.level),
                     str(random_id),
                 ),
             )

@@ -1,6 +1,8 @@
 from app.state import State
 import numpy as np
 from app.util.sector_mapping import SECTOR_TO_ETF
+from app.services.database_connector import get_connection
+
 
 def build_statistics(state: State):
     weights = np.array([
@@ -46,6 +48,30 @@ def build_statistics(state: State):
     sharpe_ratio = (
         portfolio_return - risk_free
     ) / portfolio_volatility
+
+
+    with get_connection() as conn:
+            with conn.cursor() as cur:
+                update_query = """
+                    UPDATE portfolio
+                    SET sharpe_ratio = %s,
+                        portfolio_value = %s,
+                        expected_return = %s,
+                        volatility = %s,
+                        hhi = %s
+                    WHERE id = %s
+                """
+
+                cur.execute(update_query, (
+                     float(sharpe_ratio),
+                     float(state["portfolioValue"]),
+                     float(portfolio_return),
+                     float(portfolio_volatility),
+                     float(hhi),
+                     str(state["portfolioId"]),
+                ))
+
+                conn.commit()
 
     
     return {

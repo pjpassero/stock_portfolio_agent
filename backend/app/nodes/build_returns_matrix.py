@@ -7,28 +7,44 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "temp"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-
-def build_returns_matrix(state:State) -> str:
+def build_returns_matrix(state: State) -> str:
     save_path = DATA_DIR / "returns.csv"
     returnsMatrix = None
-    for stock in state["portfolioExpanded"]:
-        df = pd.read_csv(stock.historicalDataPath)
-        returns = load_and_compute_returns(
-            stock.ticker
+    has_cash = False
 
+    for position in state["portfolioExpanded"]:
+
+        if position.assetClass == "CASH":
+            has_cash = True
+            continue
+
+        returns = load_and_compute_returns(
+            position.ticker
         )
 
         if returnsMatrix is None:
-            returnsMatrix = returns 
+            returnsMatrix = returns
         else:
-            returnsMatrix = returnsMatrix.merge(returns, on="Date")
+            returnsMatrix = returnsMatrix.merge(
+                returns,
+                on="Date"
+            )
 
-        returnsMatrix = returnsMatrix.dropna()
-
-        returnsMatrix.to_csv(save_path, index=False)
-    return {
-            "returnMatrix":returnsMatrix
+    if returnsMatrix is None:
+        return {
+            "returnMatrix": None
         }
 
+    returnsMatrix = returnsMatrix.dropna()
 
-        
+    if has_cash:
+        returnsMatrix["CASH"] = 0.0
+
+    returnsMatrix.to_csv(
+        save_path,
+        index=False
+    )
+
+    return {
+        "returnMatrix": returnsMatrix
+    }
