@@ -9,6 +9,7 @@ export default function Results() {
     const [portfolio, setPortfolio] = useState<any[]>([]);
     const [portfolioValue, setPortfolioValue] = useState(0);
     const [result, setResult] = useState<any>(null);
+    const [username, setUsername] = useState<any>(null);
     let sum = 0;
     useEffect(() => {
         async function queryPortfolio() {
@@ -20,7 +21,7 @@ export default function Results() {
                 console.log("Full response:");
                 console.log(result);
                 setResult(result);
-
+                setUsername(result.username)
                 console.log("Portfolio Expanded:");
                 setPortfolio(result.portfolioExpanded);
                 setPortfolioValue(result.portfolioValue)
@@ -47,7 +48,7 @@ export default function Results() {
         <div className="container-fluid">
             <div className="row justify-content-center">
                 <div className="col-md-10 text-center">
-                    <h1>[Name] Portfolio</h1>
+                    <h1>{username ? `${username}'s Portfolio` : "Portfolio"}</h1>
                     <h3>$
                         {(portfolioValue).toLocaleString(
                             "en-US",

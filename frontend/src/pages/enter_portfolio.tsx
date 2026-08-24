@@ -60,10 +60,10 @@ export default function EnterPortfolio() {
 
     }
     return (
-        <div className="container py-5">
+        <div className="container-fluid">
 
             <div className="row justify-content-center">
-                <div className="col-lg-10 col-xl-9">
+                <div className="col-lg-10 col-xl-11">
 
                     <div className="card shadow-sm border-0 rounded-4 mb-4">
                         <div className="card-body p-4 p-md-5">
@@ -239,7 +239,8 @@ export default function EnterPortfolio() {
                                 </label>
 
                                 <p className="text-muted small">
-                                    Select the level that best describes your investing knowledge.
+                                    Select the level that best describes your investing knowledge. This will
+                                    help us curate the best explanations for you.
                                 </p>
 
                                 <div className="d-flex flex-column flex-md-row gap-4">

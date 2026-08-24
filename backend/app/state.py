@@ -51,5 +51,4 @@ class State(TypedDict):
     etfRisk: float
     etfSectorWeights: dict[str, float]
     etfSectorHHI: float
-    etfRisk: float
 
