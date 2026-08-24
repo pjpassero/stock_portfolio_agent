@@ -11,7 +11,6 @@ class State(TypedDict):
     portfolioValue:int
     portfolioId:str
     portfolioExpanded:list[PositionExpanded]
-    response:str
     sectors:list[str]
     matrixIdentifier:str
     returnMatrix:pd.DataFrame
@@ -51,4 +50,6 @@ class State(TypedDict):
     etfRisk: float
     etfSectorWeights: dict[str, float]
     etfSectorHHI: float
+    overall_score:float
+    fin_first_response:str
 

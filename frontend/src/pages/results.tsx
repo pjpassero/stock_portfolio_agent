@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import { getPortfolio } from "../services/api";
 import { useEffect, useState } from "react";
 import MatrixTable from "../components/MatrixTable";
-
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 export default function Results() {
     const { portfolioId } = useParams<{ portfolioId: string }>();
     const [expandedTicker, setExpandedTicker] = useState<string | null>(null);
@@ -10,6 +11,7 @@ export default function Results() {
     const [portfolioValue, setPortfolioValue] = useState(0);
     const [result, setResult] = useState<any>(null);
     const [username, setUsername] = useState<any>(null);
+    const [ai_summary, setSummary] = useState<any>(null);
     let sum = 0;
     useEffect(() => {
         async function queryPortfolio() {
@@ -22,6 +24,7 @@ export default function Results() {
                 console.log(result);
                 setResult(result);
                 setUsername(result.username)
+                setSummary(result.fin_first_response)
                 console.log("Portfolio Expanded:");
                 setPortfolio(result.portfolioExpanded);
                 setPortfolioValue(result.portfolioValue)
@@ -235,7 +238,88 @@ export default function Results() {
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
                             <div className="card-title">
-                                <h1>Detailed AI Analysis and Reccomendations</h1>
+                                <h1>Detailed AI Analysis and Recommendations</h1>
+                            </div>
+
+                            <div className="portfolio-analysis text-start">
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        h2: ({ children }) => (
+                                            <h2 className="fw-bold mt-4 mb-3">
+                                                {children}
+                                            </h2>
+                                        ),
+
+                                        h3: ({ children }) => (
+                                            <h4 className="fw-semibold mt-4 mb-2">
+                                                {children}
+                                            </h4>
+                                        ),
+
+                                        p: ({ children }) => (
+                                            <p className="lh-lg mb-3">
+                                                {children}
+                                            </p>
+                                        ),
+
+                                        table: ({ children }) => (
+                                            <div className="table-responsive my-4">
+                                                <table className="table table-hover align-middle">
+                                                    {children}
+                                                </table>
+                                            </div>
+                                        ),
+
+                                        thead: ({ children }) => (
+                                            <thead className="table-light">
+                                                {children}
+                                            </thead>
+                                        ),
+
+                                        th: ({ children }) => (
+                                            <th className="fw-semibold py-3">
+                                                {children}
+                                            </th>
+                                        ),
+
+                                        td: ({ children }) => (
+                                            <td className="py-2">
+                                                {children}
+                                            </td>
+                                        ),
+
+                                        ul: ({ children }) => (
+                                            <ul className="lh-lg mb-4">
+                                                {children}
+                                            </ul>
+                                        ),
+
+                                        ol: ({ children }) => (
+                                            <ol className="lh-lg mb-4">
+                                                {children}
+                                            </ol>
+                                        ),
+
+                                        li: ({ children }) => (
+                                            <li className="mb-2">
+                                                {children}
+                                            </li>
+                                        ),
+
+                                        hr: () => (
+                                            <hr className="my-4" />
+                                        ),
+
+                                        strong: ({ children }) => (
+                                            <strong className="fw-bold">
+                                                {children}
+                                            </strong>
+                                        ),
+                                    }}
+                                >
+                                    {ai_summary ? ai_summary : "Portfolio Analysis"}
+                                </ReactMarkdown>
                             </div>
                         </div>
                     </div>

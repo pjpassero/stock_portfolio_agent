@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 load_dotenv()
 
+
+#deprecated
 client = OpenAI()
 def get_portfolio_response(state: State):
 
