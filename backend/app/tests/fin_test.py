@@ -1,4 +1,4 @@
-from app.services.openai_service import ask_fin
+from backend.app.services.openai_chat_service import ask_fin
 
 test_portfolio = {
     "username": "Philip",

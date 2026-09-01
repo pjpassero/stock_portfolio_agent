@@ -61,7 +61,8 @@ def summarize_details(state: State):
         "etfSectorHHI": state["etfSectorHHI"],
         "cashWeight": state["cashWeight"],
         "cryptoWeight": state["cryptoWeight"],
-        "overallScore": state["overall_score"]
+        "portfolioRisk": state["portfolioRisk"],
+        "portfolioScore":state["portfolio_score"]
     }
 
     prompt = prompt.replace(

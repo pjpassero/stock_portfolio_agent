@@ -1,11 +1,13 @@
 from typing import TypedDict
 from app.models.position import Position
 from app.models.positionExpanded import PositionExpanded
+from app.models.model_portfolio import ModelPortfolio
 import pandas as pd 
 import numpy as np
 
 class State(TypedDict):
     portfolio:list[Position]
+    model_portfolio:ModelPortfolio
     username:str
     interpretation_level:str
     portfolioValue:int
@@ -52,4 +54,10 @@ class State(TypedDict):
     etfSectorHHI: float
     overall_score:float
     fin_first_response:str
+    baseRisk: float
+    averageCorrelation: float
+    correlationRisk: float
+    portfolioRisk: float
+    portfolio_score:float
+
 

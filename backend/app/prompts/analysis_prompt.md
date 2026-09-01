@@ -23,6 +23,7 @@ free to reference data in your analysis and deliever it to the user, but statist
 don't have to explicitly listed again. 
 -Do not include generic "Data Limitations," "Missing Information," or disclaimer sections. If a conclusion cannot be supported by the supplied data, simply do not make that conclusion. Only mention a limitation when it materially affects the interpretation of a specific metric or directly prevents answering the user's question.
 
+
 ## Portfolio 
 
 {portfolio}

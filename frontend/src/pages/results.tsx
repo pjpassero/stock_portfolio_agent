@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { getPortfolio } from "../services/api";
 import { useEffect, useState } from "react";
 import MatrixTable from "../components/MatrixTable";
+import PortfolioScoreDial from "../components/PortfolioScoreDial";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 export default function Results() {
@@ -198,35 +199,107 @@ export default function Results() {
                 </div>
             </div>
             <div className="row">
-                <div className="col-md-6 mt-4 text-center">
+                <div className="col-md-6 mt-4">
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
-                            <div className="card-title">
-                                <h1>Statisitcal Analysis</h1>
+
+                            <div className="text-center mb-4">
+                                <h1 className="card-title">Statistical Analysis</h1>
+                                <p className="text-muted mb-0">
+                                    Key statistics calculated from your portfolio's
+                                    performance, risk, and concentration.
+                                </p>
                             </div>
-                            <p>There are a few different statistics that were calculated for the
-                                portfolio.
-                            </p>
+
                             {result && (
-                                <>
-                                    <p>Sharpe Ratio: {result.sharpeRatio.toFixed(3)}</p>
-                                    <p>HHI: {result.hhi.toFixed(3)}</p>
-                                    <p>Annualized Volatility: {(result.portfolioVolatility * 100).toFixed(3)}%</p>
-                                    <p>Expected Return: {(result.portfolioReturn * 100).toFixed(3)}%</p>
-                                    <p>Portfolio Beta: N/A%</p>
-                                </>
+                                <div className="row g-3">
+
+                                    <div className="col-6">
+                                        <div className="border rounded p-3 text-center h-100">
+                                            <div className="text-muted small mb-1">
+                                                Sharpe Ratio
+                                            </div>
+                                            <div className="fs-3 fw-bold">
+                                                {result.sharpeRatio.toFixed(3)}
+                                            </div>
+                                            <div className="small text-muted">
+                                                Risk-adjusted return
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-6">
+                                        <div className="border rounded p-3 text-center h-100">
+                                            <div className="text-muted small mb-1">
+                                                HHI
+                                            </div>
+                                            <div className="fs-3 fw-bold">
+                                                {result.hhi.toFixed(3)}
+                                            </div>
+                                            <div className="small text-muted">
+                                                Portfolio concentration
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-6">
+                                        <div className="border rounded p-3 text-center h-100">
+                                            <div className="text-muted small mb-1">
+                                                Annualized Volatility
+                                            </div>
+                                            <div className="fs-3 fw-bold">
+                                                {(result.portfolioVolatility * 100).toFixed(2)}%
+                                            </div>
+                                            <div className="small text-muted">
+                                                Annualized risk
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="col-6">
+                                        <div className="border rounded p-3 text-center h-100">
+                                            <div className="text-muted small mb-1">
+                                                Expected Return
+                                            </div>
+                                            <div className="fs-3 fw-bold">
+                                                {(result.portfolioReturn * 100).toFixed(2)}%
+                                            </div>
+                                            <div className="small text-muted">
+                                                Annualized expected return
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
                             )}
-
-
 
                         </div>
                     </div>
                 </div>
                 <div className="col-md-6 mt-4 text-center">
                     <div className="card h-100 shadow-sm">
-                        <div className="card-body">
+                        <div className="card-body d-flex flex-column align-items-center">
+
                             <div className="card-title">
                                 <h1>Health Score</h1>
+                            </div>
+
+                            <div>
+                                <p>
+                                    Your score is out of 100. The score is a combination of
+                                    all the statistics that were given to Fin for analysis. Fin takes
+                                    into account things like the HHI (concentration), the portfolio volatility,
+                                    the portfolio return, and how each security moves in relation to one
+                                    another.
+                                </p>
+                            </div>
+
+                            <div>
+                                {result && (
+                                    <PortfolioScoreDial
+                                        score={result.portfolio_score}
+                                    />
+                                )}
                             </div>
 
                         </div>
@@ -320,6 +393,17 @@ export default function Results() {
                                 >
                                     {ai_summary ? ai_summary : "Portfolio Analysis"}
                                 </ReactMarkdown>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row justify-content-center">
+                <div className="col-md-12 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title">
+                                <h1>Model Portfolios</h1>
                             </div>
                         </div>
                     </div>
