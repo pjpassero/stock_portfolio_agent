@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from app.routers import analyze
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +14,9 @@ from pathlib import Path
 from psycopg2.extras import Json
 from fastapi.encoders import jsonable_encoder
 from app.models.portfolioRequest import PortfolioRequest
+from copy import deepcopy
+from app.reanalyze_graph import app_graph_analysis
+from app.extraction_agent import extract_graph
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 dotenv_path = BASE_DIR / ".env"
@@ -69,7 +72,24 @@ def ticker_details(ticker: str):
             "ticker": ticker.upper(),
             "price": price
          }
-    
+
+
+@app.post("/portfolio/upload")
+async def upload_file(file: UploadFile = File(...)): 
+    print(file.filename)
+    contents = await file.read()
+
+    csv_text = contents.decode("utf-8-sig")
+
+    print(csv_text)
+
+    result = extract_graph.invoke({
+        "rawCSV":csv_text
+    })
+
+    print(result["portfolio"])
+
+    return result["portfolio"]
     
 @app.get("/getportfolio/{portfolio_id}")
 def get_portfolio(portfolio_id:str):
@@ -118,7 +138,21 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
         "username":portfoliorequest.username,
         "interpretation_level":portfoliorequest.level
     })
-    print(result)
+    model_state = deepcopy(result)
+
+    model_state["portfolioExpanded"] = deepcopy(
+        result["model_portfolio"].positions
+    )
+    model_result = app_graph_analysis.invoke(model_state)
+
+
+    result["model_portfolio"].expected_return = model_result["portfolioReturn"]
+    result["model_portfolio"].volatility = model_result["portfolioVolatility"]
+    result["model_portfolio"].sharpe_ratio = model_result["sharpeRatio"]
+    result["model_portfolio"].overall_score = model_result["portfolio_score"]
+    print(model_result)
+    #print(result)
+
 
     for key, value in result.items():
         try:

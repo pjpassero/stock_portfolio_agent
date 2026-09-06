@@ -9,5 +9,3 @@ class ModelPortfolio(BaseModel):
     sharpe_ratio: float | None = None
     overall_score: float | None = None
 
-    def change_position_allocation():
-        return "Change Allocation"

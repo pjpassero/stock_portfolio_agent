@@ -7,13 +7,18 @@ load_dotenv()
 
 client = OpenAI()
 
-prompt_path = Path("app/prompts/rec_changes.md")
-recommendation_prompt = prompt_path.read_text(encoding="utf-8")
+#prompt_path = Path("app/prompts/rec_changes.md")
+#recommendation_prompt = prompt_path.read_text(encoding="utf-8")
+
+testing_prompt_path = Path("app/prompts/rec_changes_2.md")
+testing_recommendation_prompt = testing_prompt_path.read_text(encoding="utf-8")
+
+
 
 def find_changes(portfolio, analysis_response):
     response = client.responses.create(
         model="gpt-5.6-terra",
-        instructions=recommendation_prompt,
+        instructions=testing_recommendation_prompt,
         input=f"""
         Portfolio:
         {json.dumps(portfolio, indent=2)}
@@ -22,6 +27,7 @@ def find_changes(portfolio, analysis_response):
         {analysis_response}
         """
     )
-    return json.loads(response.output_text)
-
+    data = json.loads(response.output_text)
+    #print(data["need_new_calculations"])
+    return data
 

@@ -22,6 +22,7 @@ Help the user understand their portfolio better using the provided analysis in l
 free to reference data in your analysis and deliever it to the user, but statistics like portfolio value
 don't have to explicitly listed again. 
 -Do not include generic "Data Limitations," "Missing Information," or disclaimer sections. If a conclusion cannot be supported by the supplied data, simply do not make that conclusion. Only mention a limitation when it materially affects the interpretation of a specific metric or directly prevents answering the user's question.
+-keep analysis within 500 words while still providing rich information
 
 
 ## Portfolio 
@@ -38,5 +39,6 @@ don't have to explicitly listed again.
 {history}
 
 ## Understanding Level
+
 
 {understanding_level}

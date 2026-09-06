@@ -13,6 +13,7 @@ export default function Results() {
     const [result, setResult] = useState<any>(null);
     const [username, setUsername] = useState<any>(null);
     const [ai_summary, setSummary] = useState<any>(null);
+    const [model_portfolio, setModel] = useState<any>(null);
     let sum = 0;
     useEffect(() => {
         async function queryPortfolio() {
@@ -24,8 +25,9 @@ export default function Results() {
                 console.log("Full response:");
                 console.log(result);
                 setResult(result);
-                setUsername(result.username)
-                setSummary(result.fin_first_response)
+                setUsername(result.username);
+                setSummary(result.fin_first_response);
+                setModel(result.model_portfolio);
                 console.log("Portfolio Expanded:");
                 setPortfolio(result.portfolioExpanded);
                 setPortfolioValue(result.portfolioValue)
@@ -227,7 +229,19 @@ export default function Results() {
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div className="col-6">
+                                        <div className="border rounded p-3 text-center h-100">
+                                            <div className="text-muted small mb-1">
+                                                Sortino Ratio
+                                            </div>
+                                            <div className="fs-3 fw-bold">
+                                                Data Here
+                                            </div>
+                                            <div className="small text-muted">
+                                                Data Info Here
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div className="col-6">
                                         <div className="border rounded p-3 text-center h-100">
                                             <div className="text-muted small mb-1">
@@ -269,6 +283,32 @@ export default function Results() {
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="col-6">
+                                        <div className="border rounded p-3 text-center h-100">
+                                            <div className="text-muted small mb-1">
+                                                VaR
+                                            </div>
+                                            <div className="fs-3 fw-bold">
+                                                Data Here %
+                                            </div>
+                                            <div className="small text-muted">
+                                                Value at Risk
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="col-6">
+                                        <div className="border rounded p-3 text-center h-100">
+                                            <div className="text-muted small mb-1">
+                                                Beta
+                                            </div>
+                                            <div className="fs-3 fw-bold">
+                                                Data Here%
+                                            </div>
+                                            <div className="small text-muted">
+                                                Portfolio Beta
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
                             )}
@@ -300,6 +340,44 @@ export default function Results() {
                                         score={result.portfolio_score}
                                     />
                                 )}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-md-6 mt-4">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+
+                            <div className="text-center mb-4">
+                                <h1 className="card-title">Portfolio Allocations</h1>
+                                <p className="text-muted mb-0">
+                                    How is your portfolio allocated?
+                                </p>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div className="col-md-6 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body d-flex flex-column align-items-center">
+
+                            <div className="card-title">
+                                <h1>Sector Map</h1>
+                            </div>
+
+                            <div>
+                                <p>
+                                    Where does your portfolio land?
+                                </p>
+                            </div>
+
+                            <div>
+
                             </div>
 
                         </div>
@@ -403,8 +481,15 @@ export default function Results() {
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
                             <div className="card-title">
-                                <h1>Model Portfolios</h1>
+                                <h1>Model Portfolio</h1>
                             </div>
+                            <p>Fin has gone through your portfolio and made some adjustments. Look at them below:</p>
+                            {model_portfolio?.positions.map((position) => (
+                                <div key={position.ticker}>
+                                    <h2>{position.ticker}</h2>
+                                    <p>Allocation: {(position.allocation * 100).toFixed(1)}%</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

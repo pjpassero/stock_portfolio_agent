@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { getTicker } from '../services/api'
+import { getTicker } from "../services/api";
 import { analyzePortfolio } from "../services/api";
+import { uploadPortfolioFile } from "../services/api";
 import type { Position } from "../types/Position";
 import { useNavigate } from "react-router-dom";
 
@@ -14,9 +15,9 @@ export default function EnterPortfolio() {
     const [response, setReponse] = useState("No Analysis Yet!");
     const [username, setUsername] = useState("");
     const [experience, setExperience] = useState("");
+    const [portfolioFile, setPortfolioFile] = useState<File | null>(null);
+
     const navigate = useNavigate();
-
-
 
 
     async function addToPortfolio() {
@@ -47,18 +48,63 @@ export default function EnterPortfolio() {
         setShareCount("");
         setCostBasis("");
     }
-    async function AnalyzePortfolio() {
 
-        if (portfolio.length === 0) {
-            alert("Please add a postion")
-        } else {
-            const result = await analyzePortfolio(portfolio, username, experience);
-            console.log(result);
-            setReponse(result.response);
-            navigate(`/results/${result.portfolioId}`);
+
+    function handlePortfolioUpload(
+        event: React.ChangeEvent<HTMLInputElement>
+    ) {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+            return;
         }
 
+        setPortfolioFile(file);
+
+        console.log("Selected portfolio file:", file);
     }
+
+
+    async function uploadPortfolio() {
+        if (!portfolioFile) {
+            alert("Please select a portfolio file");
+            return;
+        }
+
+        try {
+            const result = await uploadPortfolioFile(portfolioFile);
+
+            console.log("Imported portfolio:", result);
+
+            setPortfolio(result.positions);
+            setPortfolioFile(null);
+
+        } catch (err) {
+            console.error("Portfolio upload failed:", err);
+            alert("Unable to import portfolio");
+        }
+    }
+
+
+    async function AnalyzePortfolio() {
+        if (portfolio.length === 0) {
+            alert("Please add a position");
+        } else {
+            const result = await analyzePortfolio(
+                portfolio,
+                username,
+                experience
+            );
+
+            console.log(result);
+
+            setReponse(result.response);
+
+            navigate(`/results/${result.portfolioId}`);
+        }
+    }
+
+
     return (
         <div className="container-fluid">
 
@@ -144,6 +190,54 @@ export default function EnterPortfolio() {
                                             >
                                                 Add Position
                                             </button>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="col-12">
+                                        <div className="mt-3">
+
+                                            <p className="text-muted text-center mb-2">
+                                                Or upload your portfolio file and let Fin
+                                                take care of it!
+                                            </p>
+
+                                            <div className="d-grid">
+                                                <label
+                                                    htmlFor="portfolioFile"
+                                                    className="btn btn-outline-primary"
+                                                >
+                                                    Select Portfolio File
+                                                </label>
+
+                                                <input
+                                                    id="portfolioFile"
+                                                    type="file"
+                                                    accept=".csv"
+                                                    className="d-none"
+                                                    onChange={handlePortfolioUpload}
+                                                />
+                                            </div>
+
+
+                                            {portfolioFile && (
+                                                <>
+                                                    <p className="text-muted small text-center mt-2">
+                                                        Selected: {portfolioFile.name}
+                                                    </p>
+
+                                                    <div className="d-grid">
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-primary"
+                                                            onClick={uploadPortfolio}
+                                                        >
+                                                            Import Portfolio
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            )}
+
                                         </div>
                                     </div>
 
@@ -239,8 +333,9 @@ export default function EnterPortfolio() {
                                 </label>
 
                                 <p className="text-muted small">
-                                    Select the level that best describes your investing knowledge. This will
-                                    help us curate the best explanations for you.
+                                    Select the level that best describes your investing
+                                    knowledge. This will help us curate the best explanations
+                                    for you.
                                 </p>
 
                                 <div className="d-flex flex-column flex-md-row gap-4">
@@ -255,6 +350,7 @@ export default function EnterPortfolio() {
                                             checked={experience === "beginner"}
                                             onChange={(e) => setExperience(e.target.value)}
                                         />
+
                                         <label
                                             className="form-check-label"
                                             htmlFor="beginner"
@@ -273,6 +369,7 @@ export default function EnterPortfolio() {
                                             checked={experience === "intermediate"}
                                             onChange={(e) => setExperience(e.target.value)}
                                         />
+
                                         <label
                                             className="form-check-label"
                                             htmlFor="intermediate"
@@ -291,6 +388,7 @@ export default function EnterPortfolio() {
                                             checked={experience === "advanced"}
                                             onChange={(e) => setExperience(e.target.value)}
                                         />
+
                                         <label
                                             className="form-check-label"
                                             htmlFor="advanced"

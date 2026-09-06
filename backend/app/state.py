@@ -59,5 +59,8 @@ class State(TypedDict):
     correlationRisk: float
     portfolioRisk: float
     portfolio_score:float
+    need_new_calculations:bool
+    new_positions:list
+
 
 

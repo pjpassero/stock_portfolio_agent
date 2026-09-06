@@ -43,3 +43,23 @@ export async function getPortfolio(portfolioId: string) {
 
     return await response.json();
 }
+
+export async function uploadPortfolioFile(file: File) {
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    const response = await fetch(
+        `${API_URL}/portfolio/upload`,
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to upload portfolio file");
+    }
+
+    return await response.json();
+}
