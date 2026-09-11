@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 
 def route_model(state:State):
     if(state["need_new_calculations"]):

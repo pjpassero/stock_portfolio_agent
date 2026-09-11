@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 class Position(BaseModel):
     ticker: str
-    shares: int
+    shares: float
     costBasis: float
     currentBasis: float

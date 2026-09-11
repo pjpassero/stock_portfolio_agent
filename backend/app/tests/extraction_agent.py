@@ -1,1 +1,2 @@
-from app.extraction_agent import graph
+from backend.app.agents.extraction_agent import graph
+

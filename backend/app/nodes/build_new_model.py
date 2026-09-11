@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 from app.services.reccomend_changes import find_changes
 from app.models.model_portfolio import ModelPortfolio
 from copy import deepcopy

@@ -6,6 +6,10 @@ class ModelPortfolio(BaseModel):
     portfolio_value: float
     expected_return: float | None = None
     volatility: float | None = None
+    variance:float | None = None
     sharpe_ratio: float | None = None
-    overall_score: float | None = None
+    sortino_ratio: float | None = None
+    hhi:float | None = None
+    beta:float | None = None
+    portfolio_score: float | None = None
 

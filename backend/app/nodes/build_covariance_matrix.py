@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 from app.services.get_covariance_matrix_service import calculate_covariance_matrix
 import pandas as pd
 from app.services.database_connector import get_connection

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.graph import app_graph
+from app.agents.graph import app_graph
 
 router = APIRouter()
 

@@ -15,7 +15,7 @@ class PositionExpanded(BaseModel):
     market_cap: Optional[int] = None
     trailing_pe: Optional[float] = None
     forward_pe: Optional[float] = None
-    beta: Optional[float] = None
+    beta: Optional[float] = 1.0
     dividend_yield: Optional[float] = None
     profit_margin: Optional[float] = None
     revenue_growth: Optional[float] = None

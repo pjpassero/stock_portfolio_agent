@@ -1,9 +1,9 @@
-from app.state import State
+from app.states.state import State
 import numpy as np
 
 from app.services.etf_service import get_etf_holdings, get_holding_sector
 from app.services.retrieve_vix import get_vix
-
+from app.services.database_connector import get_connection
 
 ALPHA = 0.40
 BETA = 0.30
@@ -229,6 +229,8 @@ def calculate_etf_score(state: State):
     print("Sector Score:", sector_score)
     print("ETF Risk:", etf_risk)
 
+
+   
     return {
         "etfInternalWeights": state["etfInternalWeights"],
         "etfVolatility": state["etfVolatility"],

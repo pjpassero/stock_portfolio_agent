@@ -38,8 +38,8 @@ export async function analyzePortfolio(portfolio: Position[], username: string, 
 }
 
 export async function getPortfolio(portfolioId: string) {
-    const response = await fetch(`${API_URL}/getportfolio/${portfolioId}`);
-
+    //const response = await fetch(`${API_URL}/getportfolio/${portfolioId}`);
+    const response = await fetch(`${API_URL}/endpoint_test/new_data_stream/${portfolioId}`);
 
     return await response.json();
 }

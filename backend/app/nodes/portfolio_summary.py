@@ -1,5 +1,5 @@
 
-from app.state import State
+from app.states.state import State
 from openai import OpenAI
 from pathlib import Path
 from dotenv import load_dotenv

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from app.state import State
+from app.states.state import State
 from app.nodes.portfolio_summary import summarize_details
 
 test_state: State = {

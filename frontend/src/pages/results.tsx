@@ -30,7 +30,7 @@ export default function Results() {
                 setModel(result.model_portfolio);
                 console.log("Portfolio Expanded:");
                 setPortfolio(result.portfolioExpanded);
-                setPortfolioValue(result.portfolioValue)
+                setPortfolioValue(result.portfolio_value)
             } catch (err) {
                 console.error(err);
             }
@@ -162,7 +162,27 @@ export default function Results() {
                 ))}
             </div>
             <div className="row">
-                <div className="col-md-6 mt-4 text-center">
+                <div className="col-lg-12 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title">
+                                <h1>Correlation Matrix</h1>
+                            </div>
+                            <p className="text-justify">
+                                Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little relationship between their movements.                            </p>
+                            {result && (
+                                <MatrixTable
+                                    title="Covariance Matrix"
+                                    matrix={result.correlation}
+                                    decimals={6}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-lg-12 mt-4 text-center">
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
                             <div className="card-title">
@@ -174,25 +194,7 @@ export default function Results() {
                             {result && (
                                 <MatrixTable
                                     title="Covariance Matrix"
-                                    matrix={result.covarianceMatrix}
-                                    decimals={6}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-6 mt-4 text-center">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body">
-                            <div className="card-title">
-                                <h1>Correlation Matrix</h1>
-                            </div>
-                            <p className="text-justify">
-                                Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little relationship between their movements.                            </p>
-                            {result && (
-                                <MatrixTable
-                                    title="Covariance Matrix"
-                                    matrix={result.correlationMatrix}
+                                    matrix={result.covariance}
                                     decimals={6}
                                 />
                             )}
@@ -222,7 +224,7 @@ export default function Results() {
                                                 Sharpe Ratio
                                             </div>
                                             <div className="fs-3 fw-bold">
-                                                {result.sharpeRatio.toFixed(3)}
+                                                {result.sharpe_ratio.toFixed(3)}
                                             </div>
                                             <div className="small text-muted">
                                                 Risk-adjusted return
@@ -262,7 +264,7 @@ export default function Results() {
                                                 Annualized Volatility
                                             </div>
                                             <div className="fs-3 fw-bold">
-                                                {(result.portfolioVolatility * 100).toFixed(2)}%
+                                                {(result.volatility * 100).toFixed(2)}%
                                             </div>
                                             <div className="small text-muted">
                                                 Annualized risk
@@ -276,7 +278,7 @@ export default function Results() {
                                                 Expected Return
                                             </div>
                                             <div className="fs-3 fw-bold">
-                                                {(result.portfolioReturn * 100).toFixed(2)}%
+                                                {(result.expected_return * 100).toFixed(2)}%
                                             </div>
                                             <div className="small text-muted">
                                                 Annualized expected return
@@ -302,7 +304,7 @@ export default function Results() {
                                                 Beta
                                             </div>
                                             <div className="fs-3 fw-bold">
-                                                Data Here%
+                                                {(result.portfolio_beta).toFixed(3)}
                                             </div>
                                             <div className="small text-muted">
                                                 Portfolio Beta
@@ -490,6 +492,13 @@ export default function Results() {
                                     <p>Allocation: {(position.allocation * 100).toFixed(1)}%</p>
                                 </div>
                             ))}
+                            <div className="card shadow-sm w-50">
+                                <div className="card-body">
+                                    <div className="card-title">
+                                        <h2>New Statistics</h2>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

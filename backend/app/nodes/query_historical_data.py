@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 from app.services.get_historical_data import get_historical_data
 
 

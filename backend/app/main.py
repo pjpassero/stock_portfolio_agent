@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.services.yahoo import get_company_data
 from app.models.position import Position
 from app.routers import analyze
-from app.graph import app_graph
+from app.agents.graph import app_graph
 import os
 import uuid
 from dotenv import load_dotenv
@@ -15,9 +15,10 @@ from psycopg2.extras import Json
 from fastapi.encoders import jsonable_encoder
 from app.models.portfolioRequest import PortfolioRequest
 from copy import deepcopy
-from app.reanalyze_graph import app_graph_analysis
-from app.extraction_agent import extract_graph
-
+from app.agents.reanalyze_graph import app_graph_analysis
+from app.agents.extraction_agent import extract_graph
+from psycopg2.extras import RealDictCursor
+from app.tools.expand_position import expand_tickers
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 dotenv_path = BASE_DIR / ".env"
 
@@ -73,6 +74,84 @@ def ticker_details(ticker: str):
             "price": price
          }
 
+
+@app.get("/endpoint_test/new_data_stream/{portfolioId}")
+def new_data_stream(portfolioId:str):
+    with get_connection() as conn:
+        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+            portfolio_data_query = """
+                SELECT portfolio_value, portfolio_beta, volatility, expected_return,sharpe_ratio,username, interpretation_level,hhi,
+                portfolio_score, portfolio_return FROM portfolio WHERE id=%s
+            """
+            holdings_data_query = """
+                SELECT * FROM portfolio_holding WHERE portfolio_id=%s
+                """
+            matrix_data_query = """ 
+                SELECT * FROM matrix WHERE portfolio_id=%s
+            """
+            model_portfolio_query = """
+                SELECT * FROM model_portfolio WHERE portfolio_id=%s
+            """
+            model_portfolio_positions_query = """
+                SELECT * FROM model_portfolio_position WHERE portfolio_id=%s
+            """
+            get_fin_response = """SELECT * FROM fin_first_response WHERE portfolio_id=%s"""
+
+            cur.execute(portfolio_data_query, (portfolioId,))
+            result = cur.fetchone()
+
+            cur.execute(get_fin_response,(portfolioId,))
+            row = cur.fetchone()
+            result["fin_first_response"] = row["fin_response"]
+
+            cur.execute(holdings_data_query, (portfolioId,))
+            holdings = cur.fetchall()
+
+            positions = []
+
+            for holding in holdings:
+                position = {
+                    "ticker": holding["ticker"],
+                    "allocation": holding["allocation"],
+                    "shares": holding["shares"],
+                    "costBasis": holding["cost_basis"],
+                    "currentBasis": holding["current_basis"]
+                }
+
+                positions.append(position)
+
+            expanded_positions = expand_tickers(positions)    
+            result["portfolioExpanded"] = expanded_positions
+            cur.execute(model_portfolio_query, (portfolioId,))
+            result["model_portfolio"] = cur.fetchone()
+
+            cur.execute(model_portfolio_positions_query, (portfolioId,))
+            result["model_portfolio"]["positions"] = cur.fetchall()
+
+            cur.execute(matrix_data_query, (portfolioId,))
+            matricies = cur.fetchall()
+            correlation = {}
+            covariance = {}
+
+            for row in matricies:
+
+                matrix = (
+                    correlation
+                    if row["type"] == "correlation"
+                    else covariance
+                )
+
+                ticker_a = row["ticker_a"]
+                ticker_b = row["ticker_b"]
+
+                if ticker_a not in matrix:
+                    matrix[ticker_a] = {}
+
+                matrix[ticker_a][ticker_b] = row["value"]
+
+            result["correlation"] = correlation
+            result["covariance"] = covariance
+        return dict(result)
 
 @app.post("/portfolio/upload")
 async def upload_file(file: UploadFile = File(...)): 
@@ -149,9 +228,12 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
     result["model_portfolio"].expected_return = model_result["portfolioReturn"]
     result["model_portfolio"].volatility = model_result["portfolioVolatility"]
     result["model_portfolio"].sharpe_ratio = model_result["sharpeRatio"]
-    result["model_portfolio"].overall_score = model_result["portfolio_score"]
+    result["model_portfolio"].portfolio_score = model_result["portfolio_score"]
+    result["model_portfolio"].hhi = model_result["hhi"]
+
     print(model_result)
     #print(result)
+
 
 
     for key, value in result.items():

@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 
 THETA = 0.20
 
@@ -11,7 +11,9 @@ def calculate_portfolio_risk(state: State):
     )
 
     correlation_matrix = state["correlationMatrix"]
-    weights = state["weights"]
+
+    # CASH is not included in correlation matrix
+    weights = state["weights"][1:]
 
     weighted_correlation = 0.0
     weight_sum = 0.0
@@ -40,6 +42,7 @@ def calculate_portfolio_risk(state: State):
     )
 
     portfolioScore = (1 - portfolio_risk) * 100
+
     return {
         "baseRisk": float(base_risk),
         "averageCorrelation": float(average_correlation),

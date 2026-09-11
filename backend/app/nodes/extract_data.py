@@ -1,4 +1,4 @@
-from app.extraction_state import ExtractionState
+from app.states.extraction_state import ExtractionState
 from app.services.csv_extraction import extract_csv_with_llm
 import json
 

@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 from pathlib import Path
 from app.services.get_stock_returns import load_and_compute_returns
 import pandas as pd

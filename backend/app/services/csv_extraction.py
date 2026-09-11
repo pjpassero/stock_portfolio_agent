@@ -22,7 +22,7 @@ def extract_csv_with_llm(csvText):
             str(csvText)
     )
     response = client.responses.create(
-            model="gpt-5.6",
+            model="gpt-5.6-terra",
             input=prompt
     )
     

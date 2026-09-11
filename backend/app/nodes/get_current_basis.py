@@ -1,4 +1,4 @@
-from app.extraction_state import ExtractionState
+from app.states.extraction_state import ExtractionState
 from app.services.yahoo import get_company_data
 
 

@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from app.state import State
+from app.states.state import State
 
 from app.nodes.get_portfolio_response import get_portfolio_response
 from app.nodes.expand_portfolio import expand_position_details
@@ -14,6 +14,7 @@ from app.nodes.calculate_score_etf import calculate_etf_score
 from app.nodes.overall_score import calculate_portfolio_risk
 from app.nodes.portfolio_summary import summarize_details
 from app.nodes.build_new_model import build_new_model
+from app.nodes.update_database import update_all_data
 graph = StateGraph(State)
 
 
@@ -33,7 +34,7 @@ graph.add_node("calculate_etf_score",calculate_etf_score)
 graph.add_node("calculate_overall_score", calculate_portfolio_risk)
 graph.add_node("get_first_analysis", summarize_details)
 graph.add_node("adjust_portfolio", build_new_model)
-
+graph.add_node("update_data", update_all_data)
 
 #graph.add_edge(START, "get_stock_data")
 #graph.add_edge(START, "get_portfolio_response")
@@ -51,7 +52,9 @@ graph.add_edge("calculate_score", "calculate_etf_score")
 graph.add_edge("calculate_etf_score", "calculate_overall_score")
 graph.add_edge("calculate_overall_score", "get_first_analysis")
 graph.add_edge("get_first_analysis", "adjust_portfolio")
-graph.add_edge("adjust_portfolio", END)
+graph.add_edge("adjust_portfolio", "update_data")
+
+graph.add_edge("update_data", END)
 
 
 

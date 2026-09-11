@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 from app.services.retrieve_vix import get_vix
 from app.services.database_connector import get_connection
 from app.util.sector_mapping import SECTOR_TO_ETF

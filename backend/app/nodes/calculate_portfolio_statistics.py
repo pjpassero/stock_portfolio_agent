@@ -1,17 +1,21 @@
-from app.state import State
+from app.states.state import State
 import numpy as np
 from app.util.sector_mapping import SECTOR_TO_ETF
 from app.services.database_connector import get_connection
 
 
+
+
 def build_statistics(state: State):
-    weights = np.array([
-        position.allocation
-        for position in state["portfolioExpanded"]
-    ])
+    positions = state["portfolioExpanded"]
+    tickers = [p.ticker for p in positions]
+
+    weights = np.array([p.allocation for p in positions])
+    betas = np.array([p.beta for p in positions])
+    beta = np.dot(weights,betas)
 
     sector_weights = {}
-    for stock in state["portfolioExpanded"]:
+    for stock in positions:
         sector_weights[stock.sector] = (
             sector_weights.get(stock.sector, 0)
             + stock.allocation
@@ -19,17 +23,24 @@ def build_statistics(state: State):
 
     hhi = sum(
         stock.allocation ** 2
-        for stock in state["portfolioExpanded"]
+        for stock in positions
     )
 
-    mean_returns = (
-        state["returnMatrix"]
-        .drop(columns=["Date"])
-        .mean()
-        .to_numpy()
-    )
+  
+    returns_df = state["returnMatrix"].drop(columns=["Date"])
+    mean_returns_series = returns_df.mean().reindex(tickers)
+    covariance_df = state["covarianceMatrix"].reindex(index=tickers, columns=tickers)
 
-    covariance = state["covarianceMatrix"].values
+ 
+    if mean_returns_series.isna().any() or covariance_df.isna().any().any():
+        missing = [t for t in tickers if t not in returns_df.columns]
+        raise ValueError(
+            f"Ticker mismatch between portfolioExpanded and returnMatrix/"
+            f"covarianceMatrix: {missing or 'unknown - check both index sets'}"
+        )
+
+    mean_returns = mean_returns_series.to_numpy()
+    covariance = covariance_df.to_numpy()
 
     portfolio_variance = weights.T @ covariance @ weights
 
@@ -49,10 +60,9 @@ def build_statistics(state: State):
         portfolio_return - risk_free
     ) / portfolio_volatility
 
-
     with get_connection() as conn:
-            with conn.cursor() as cur:
-                update_query = """
+        with conn.cursor() as cur:
+            update_query = """
                     UPDATE portfolio
                     SET sharpe_ratio = %s,
                         portfolio_value = %s,
@@ -62,18 +72,17 @@ def build_statistics(state: State):
                     WHERE id = %s
                 """
 
-                cur.execute(update_query, (
-                     float(sharpe_ratio),
-                     float(state["portfolioValue"]),
-                     float(portfolio_return),
-                     float(portfolio_volatility),
-                     float(hhi),
-                     str(state["portfolioId"]),
-                ))
+            cur.execute(update_query, (
+                float(sharpe_ratio),
+                float(state["portfolioValue"]),
+                float(portfolio_return),
+                float(portfolio_volatility),
+                float(hhi),
+                str(state["portfolioId"]),
+            ))
 
-                conn.commit()
+        conn.commit()
 
-    
     return {
         "weights": weights.tolist(),
         "sectorWeights": sector_weights,
@@ -83,5 +92,6 @@ def build_statistics(state: State):
         "portfolioReturn": float(portfolio_return),
         "portfolioVolatility": float(portfolio_volatility),
         "sharpeRatio": float(sharpe_ratio),
-        #"sector_hhi":float(sector_hhi)
+        "portfolioBeta":float(beta)
+        # "sector_hhi": float(sector_hhi)
     }

@@ -1,9 +1,10 @@
-from backend.app.services.openai_chat_service import ask_fin
+from app.services.openai_chat_service import ask_fin
 
 test_portfolio = {
     "username": "Philip",
     "experienceLevel": "intermediate",
     "portfolioValue": 125000.00,
+    "portfolioId":"ABCDE-12345",
     "holdings": [
         {
             "ticker": "AAPL",
@@ -69,34 +70,30 @@ test_metrics = {
 }
 
 
-test_history = [
-    {
+test_history = []
+
+while True:
+    user_input = input("Chat:")
+
+    if user_input.lower() == "quit":
+        break
+
+    test_history.append({
         "role": "user",
-        "content": "Is my portfolio diversified?"
-    },
-    {
+        "content": user_input
+    })
+
+    response = ask_fin(
+        portfolio=test_portfolio,
+        level=test_portfolio["experienceLevel"],
+        metrics=test_metrics,
+        history=test_history,
+        question=user_input
+    )
+
+    test_history.append({
         "role": "assistant",
-        "content": (
-            "Your portfolio has exposure to individual stocks, "
-            "ETFs, and cash."
-        )
-    }
-]
+        "content": response
+    })
 
-
-test_question = (
-    "What is the biggest risk in my portfolio and what is causing it?"
-)
-
-
-response = ask_fin(
-    portfolio=test_portfolio,
-    level=test_portfolio["experienceLevel"],
-    metrics=test_metrics,
-    history=test_history,
-    question=test_question
-)
-
-
-print("\n--- FIN RESPONSE ---\n")
-print(response)
+    print("Fin: " + response)

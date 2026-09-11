@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 from app.services.yahoo import get_company_data
 from app.models.positionExpanded import PositionExpanded
 

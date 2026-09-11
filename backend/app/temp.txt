@@ -1,0 +1,11 @@
+ with get_connection() as conn:
+        with conn.cursor() as cur:
+            insert_query = """
+                    UPDATE portfolio SET (
+                    etf_risk_score= %s,
+                    etf_volatility = %s,
+                    etf_risk_score=%s,
+                    ) WHERE id=%s
+                    """
+
+            cur.execute(insert_query, (float(state["etfRisk"]),float(state["etfVolatility"]), float(state["etfRisk"]), state["portfolioId"]))

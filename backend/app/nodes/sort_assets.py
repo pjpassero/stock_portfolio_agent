@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 
 def classify_assets(state: State):
     stocks = []

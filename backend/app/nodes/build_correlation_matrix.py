@@ -1,4 +1,4 @@
-from app.state import State
+from app.states.state import State
 from app.services.get_correlation_matrix_service import calculate_correlation_matrix
 from app.services.database_connector import get_connection
 from psycopg2.extras import Json
