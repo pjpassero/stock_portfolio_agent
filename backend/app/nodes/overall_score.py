@@ -12,7 +12,6 @@ def calculate_portfolio_risk(state: State):
 
     correlation_matrix = state["correlationMatrix"]
 
-    # CASH is not included in correlation matrix
     weights = state["weights"][1:]
 
     weighted_correlation = 0.0

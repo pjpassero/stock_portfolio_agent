@@ -106,10 +106,11 @@ def get_sector_volatility():
             for ticker, volatility in sector_volatility.items():
                 cur.execute(
                     """
-                    INSERT INTO sector_volatility (ticker, volatility)
+                    INSERT INTO sector_volatility (ticker, volatility, created_at)
                     VALUES (%s, %s)
                     ON CONFLICT (ticker)
-                    DO UPDATE SET volatility = EXCLUDED.volatility;
+                    DO UPDATE SET volatility = EXCLUDED.volatility,
+                    created_at = NOW();
                     """,
                     (ticker, float(volatility))
                 )

@@ -1,0 +1,41 @@
+mean_daily_returns = returns.mean()
+
+portfolio_returns = []
+portfolio_volatilties = []
+
+for aapl_weight in np.arange(0, 1.01, 0.01):
+    for mu_weight in np.arange(0, 1.01 - aapl_weight, 0.01):
+        xom_weight = 1 -aapl_weight - mu_weight
+        weights = np.array([
+            aapl_weight,
+            mu_weight,
+            xom_weight
+        ])
+
+        daily_variance = weights.T @ returns.cov().values @ weights
+        annual_vol = np.sqrt(252 * daily_variance)
+        portfolio_return  = (weights.T @ mean_daily_returns.values) * 252
+
+        portfolio_returns.append(portfolio_return)
+        portfolio_volatilties.append(annual_vol)
+        print(
+            aapl_weight,
+            mu_weight,
+            xom_weight,
+            portfolio_return,
+            annual_vol
+        )
+
+min_index = np.argmin(portfolio_volatilties)
+min_vol = portfolio_volatilties[min_index]
+min_return = portfolio_returns[min_index]
+
+#plt.plot(portfolio_volatilties, portfolio_returns)
+
+plt.scatter (min_vol,min_return,s=5)
+
+plt.xlabel("Annual Volatility")
+plt.ylabel("Annual Return")
+plt.title("AAPL / MU / XOM Portfolio")
+
+plt.show()

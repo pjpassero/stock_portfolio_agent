@@ -486,19 +486,60 @@ export default function Results() {
                                 <h1>Model Portfolio</h1>
                             </div>
                             <p>Fin has gone through your portfolio and made some adjustments. Look at them below:</p>
-                            {model_portfolio?.positions.map((position) => (
-                                <div key={position.ticker}>
-                                    <h2>{position.ticker}</h2>
-                                    <p>Allocation: {(position.allocation * 100).toFixed(1)}%</p>
-                                </div>
-                            ))}
-                            <div className="card shadow-sm w-50">
-                                <div className="card-body">
-                                    <div className="card-title">
-                                        <h2>New Statistics</h2>
+                            <div className="row">
+                                <div className="card shadow-sm">
+                                    <div className="card-body">
+                                        <div className="card-title">
+                                            New Statistics
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            <div className="row">
+                                {model_portfolio && (
+                                    <div className="table-responsive mt-4">
+                                        <h3>Modeled Changes</h3>
+                                        <p>{model_portfolio.short_reasoning}</p>
+                                        <table className="table table-hover align-middle">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ticker</th>
+                                                    <th>Current Allocation</th>
+                                                    <th>Model Allocation</th>
+                                                    <th>Change</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+                                                {model_portfolio.positions.map((position: any, index: number) => (
+                                                    <tr key={position.ticker}>
+                                                        <td>
+                                                            <strong>{position.ticker}</strong>
+                                                        </td>
+
+                                                        <td>
+                                                            {(portfolio[index].allocation * 100).toFixed(2)}%
+                                                        </td>
+
+                                                        <td>
+                                                            {(position.modeled_allocation * 100).toFixed(2)}%
+                                                        </td>
+
+                                                        <td>
+                                                            {(
+                                                                (position.modeled_allocation -
+                                                                    portfolio[index].allocation) *
+                                                                100
+                                                            ).toFixed(2)}%
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+
                         </div>
                     </div>
                 </div>

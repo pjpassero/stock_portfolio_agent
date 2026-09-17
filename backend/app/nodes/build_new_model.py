@@ -32,5 +32,6 @@ def build_new_model(state: State):
     return {
         "model_portfolio": model_portfolio,
         "need_new_calculations": bool(new_allocations["need_new_calculations"]),
-        "new_positions": new_allocations["tickers_added"]
+        "new_positions": new_allocations["tickers_added"],
+        "short_explanation":str(new_allocations["short-explanation"])
     }

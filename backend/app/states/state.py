@@ -57,6 +57,7 @@ class State(TypedDict):
     portfolio_score:float #add
     need_new_calculations:bool
     new_positions:list
+    short_explanation:str
 
 
 

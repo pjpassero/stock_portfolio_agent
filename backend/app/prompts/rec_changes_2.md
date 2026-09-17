@@ -52,6 +52,10 @@ Return ONLY valid JSON.
 
 Do not include markdown, explanations, code fences, or text outside the JSON.
 
+Make sure proposed allocation is a round decimal.
+
+Provide a short explanation of what you did in 250 words or less.
+
 Use exactly this structure:
 
 {
@@ -64,5 +68,6 @@ Use exactly this structure:
         }
     ],
     "need_new_calculations":false,
-    "tickers_added":{}
+    "tickers_added":{},
+    "short-explanation":HERE
 }
