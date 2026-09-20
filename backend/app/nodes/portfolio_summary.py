@@ -47,21 +47,10 @@ def summarize_details(state: State):
         #"portfolioBeta": state["portfolioBeta"],
 
         "stockWeight": state["stockWeight"],
-        "stockRisk": state["stockRisk"],
-        "stockVolatility": state["stockVolatility"],
-        "stockHHI": state["stockHHI"],
-        "stockInternalWeights": state["stockInternalWeights"],
-        "stockSectorWeights": state["stockSectorWeights"],
-
+   
         "etfWeight": state["etfWeight"],
-        "etfRisk": state["etfRisk"],
-        "etfVolatility": state["etfVolatility"],
-        "etfInternalWeights": state["etfInternalWeights"],
-        "etfSectorWeights": state["etfSectorWeights"],
-        "etfSectorHHI": state["etfSectorHHI"],
         "cashWeight": state["cashWeight"],
         "cryptoWeight": state["cryptoWeight"],
-        "portfolioRisk": state["portfolioRisk"],
         "portfolioScore":state["portfolio_score"]
     }
 

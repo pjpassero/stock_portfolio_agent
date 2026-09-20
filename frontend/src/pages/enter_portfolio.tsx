@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function EnterPortfolio() {
     const [portfolio, setPortfolio] = useState<Position[]>([]);
-    const [ticker, setTicker] = useState("None");
+    const [ticker, setTicker] = useState("");
     const [price, setPrice] = useState("");
     const [shareCount, setShareCount] = useState("");
     const [costBasis, setCostBasis] = useState("");

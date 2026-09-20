@@ -15,6 +15,7 @@ from app.nodes.overall_score import calculate_portfolio_risk
 from app.nodes.portfolio_summary import summarize_details
 from app.nodes.build_new_model import build_new_model
 from app.nodes.update_database import update_all_data
+from app.nodes.scoring_model import start_scoring
 graph = StateGraph(State)
 
 
@@ -35,6 +36,7 @@ graph.add_node("calculate_overall_score", calculate_portfolio_risk)
 graph.add_node("get_first_analysis", summarize_details)
 graph.add_node("adjust_portfolio", build_new_model)
 graph.add_node("update_data", update_all_data)
+graph.add_node("score", start_scoring)
 
 #graph.add_edge(START, "get_stock_data")
 #graph.add_edge(START, "get_portfolio_response")
@@ -42,18 +44,14 @@ graph.add_node("update_data", update_all_data)
 
 graph.add_edge(START, "expand_details")
 graph.add_edge("expand_details", "classify_assets")
-graph.add_edge("classify_assets", "get_historical_data")
-graph.add_edge("get_historical_data", "build_returns_matrix")
+graph.add_edge("classify_assets", "build_returns_matrix")
 graph.add_edge("build_returns_matrix", "build_covariance_matrix")
 graph.add_edge("build_covariance_matrix", "build_correlation_matrix")
 graph.add_edge("build_correlation_matrix", "calculate_statistics")
-graph.add_edge("calculate_statistics", "calculate_score")
-graph.add_edge("calculate_score", "calculate_etf_score")
-graph.add_edge("calculate_etf_score", "calculate_overall_score")
-graph.add_edge("calculate_overall_score", "get_first_analysis")
+graph.add_edge("calculate_statistics", "score")
+graph.add_edge("score", "get_first_analysis")
 graph.add_edge("get_first_analysis", "adjust_portfolio")
 graph.add_edge("adjust_portfolio", "update_data")
-
 graph.add_edge("update_data", END)
 
 

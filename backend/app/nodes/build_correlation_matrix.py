@@ -1,14 +1,11 @@
 from app.states.state import State
-from app.services.get_correlation_matrix_service import calculate_correlation_matrix
 from app.services.database_connector import get_connection
-from psycopg2.extras import Json
-import pandas as pd
 
 def build_correlation_matrix(state: State):
     df = state["returnMatrix"]
 
     df = df.drop(
-        columns=["Date", "CASH"],
+        columns=["CASH"],
         errors="ignore"
     )
 

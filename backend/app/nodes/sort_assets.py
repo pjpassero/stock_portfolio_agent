@@ -1,16 +1,22 @@
 from app.states.state import State
+import yfinance as yf
+
 
 def classify_assets(state: State):
     stocks = []
     etfs = []
     crypto = []
     cash_weight = 0.0
-
+    sectorMap = {}
     for position in state["portfolioExpanded"]:
         asset_class = position.assetClass
 
         if asset_class == "EQUITY":
             stocks.append(position)
+            stock = yf.Ticker(position.ticker)
+            sector = stock.info.get("sector")
+            if sector is not None:
+                sectorMap[position.ticker] = sector.lower().replace(" ", "_")
 
         elif asset_class == "ETF":
             etfs.append(position)
@@ -33,5 +39,6 @@ def classify_assets(state: State):
         "stockWeight": stock_weight,
         "etfWeight": etf_weight,
         "cryptoWeight": crypto_weight,
-        "cashWeight":cash_weight
+        "cashWeight":cash_weight,
+        "sector_map":sectorMap
     }

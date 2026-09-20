@@ -58,6 +58,8 @@ class State(TypedDict):
     need_new_calculations:bool
     new_positions:list
     short_explanation:str
+    sector_map:dict[str, str]
+    
 
 
 

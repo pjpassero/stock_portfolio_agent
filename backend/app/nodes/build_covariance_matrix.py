@@ -1,11 +1,9 @@
 from app.states.state import State
-from app.services.get_covariance_matrix_service import calculate_covariance_matrix
-import pandas as pd
 from app.services.database_connector import get_connection
-from psycopg2.extras import Json
+
 def build_covariance_matrix(state: State):
     df = state["returnMatrix"]
-    df = df.drop(columns=["Date"])
+
     cov = df.cov()
 
     with get_connection() as conn:

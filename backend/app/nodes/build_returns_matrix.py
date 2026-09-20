@@ -2,48 +2,42 @@ from app.states.state import State
 from pathlib import Path
 from app.services.get_stock_returns import load_and_compute_returns
 import pandas as pd
+import yfinance as yf
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "temp"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def build_returns_matrix(state: State) -> str:
-    save_path = DATA_DIR / "returns.csv"
-    returnsMatrix = None
-    has_cash = False
+def build_returns_matrix(state: State):
+    tickers = [
+        position.ticker
+        for position in state["portfolioExpanded"]
+    ]
 
-    for position in state["portfolioExpanded"]:
+    market_tickers = [
+        ticker
+        for ticker in tickers
+        if ticker != "CASH"
+    ]
 
-        if position.assetClass == "CASH":
-            has_cash = True
-            continue
+    prices = yf.download(
+        market_tickers,
+        period="5y",
+        progress=False
+    )["Close"]
 
-        returns = load_and_compute_returns(
-            position.ticker
-        )
+    prices = prices[market_tickers]
 
-        if returnsMatrix is None:
-            returnsMatrix = returns
-        else:
-            returnsMatrix = returnsMatrix.merge(
-                returns,
-                on="Date"
-            )
+    returnsMatrix = (
+        prices
+        .pct_change()
+        .dropna()
+    )
 
-    if returnsMatrix is None:
-        return {
-            "returnMatrix": None
-        }
-
-    returnsMatrix = returnsMatrix.dropna()
-
-    if has_cash:
+    if state["cashWeight"] > 0:
         returnsMatrix["CASH"] = 0.0
 
-    returnsMatrix.to_csv(
-        save_path,
-        index=False
-    )
+    returnsMatrix = returnsMatrix[tickers]
 
     return {
         "returnMatrix": returnsMatrix
