@@ -59,6 +59,7 @@ class State(TypedDict):
     new_positions:list
     short_explanation:str
     sector_map:dict[str, str]
+    sortinoRatio:float
     
 
 

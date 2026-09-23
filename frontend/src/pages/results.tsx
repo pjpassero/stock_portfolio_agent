@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { getPortfolio } from "../services/api";
-import { useEffect, useState } from "react";
+import { SendMessage } from "../services/api";
+import { useEffect, useState, useRef } from "react";
 import MatrixTable from "../components/MatrixTable";
 import PortfolioScoreDial from "../components/PortfolioScoreDial";
 import ReactMarkdown from "react-markdown";
@@ -14,6 +15,9 @@ export default function Results() {
     const [username, setUsername] = useState<any>(null);
     const [ai_summary, setSummary] = useState<any>(null);
     const [model_portfolio, setModel] = useState<any>(null);
+    const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState<any[]>([]);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
     let sum = 0;
     useEffect(() => {
         async function queryPortfolio() {
@@ -30,7 +34,8 @@ export default function Results() {
                 setModel(result.model_portfolio);
                 console.log("Portfolio Expanded:");
                 setPortfolio(result.portfolioExpanded);
-                setPortfolioValue(result.portfolio_value)
+                setPortfolioValue(result.portfolio_value);
+                setMessages(result.messages || []);
             } catch (err) {
                 console.error(err);
             }
@@ -47,7 +52,49 @@ export default function Results() {
         console.log(result);
     }, [portfolio]);
 
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth"
+        })
+    }, [messages])
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (!message.trim() || !portfolioId) {
+            return;
+        }
+        const newMessage = message.trim();
+
+        setMessages(prev => [
+            ...prev,
+            {
+                chat_id: `temp-${Date.now()}`,
+                role: "user",
+                content: newMessage
+            }
+        ]);
+
+        setMessage("");
+
+        try {
+            const data = await SendMessage(message, portfolioId);
+            console.log(data);
+            setMessages(prev => [
+                ...prev,
+                {
+                    chat_id: `temp-fin-${Date.now()}`,
+                    role: "assistant",
+                    content: data
+                }
+            ]);
+
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
 
 
     return (
@@ -237,7 +284,8 @@ export default function Results() {
                                                 Sortino Ratio
                                             </div>
                                             <div className="fs-3 fw-bold">
-                                                Data Here
+                                                {result.sortino_ratio.toFixed(3)}
+
                                             </div>
                                             <div className="small text-muted">
                                                 Data Info Here
@@ -285,19 +333,7 @@ export default function Results() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-6">
-                                        <div className="border rounded p-3 text-center h-100">
-                                            <div className="text-muted small mb-1">
-                                                VaR
-                                            </div>
-                                            <div className="fs-3 fw-bold">
-                                                Data Here %
-                                            </div>
-                                            <div className="small text-muted">
-                                                Value at Risk
-                                            </div>
-                                        </div>
-                                    </div>
+
                                     <div className="col-6">
                                         <div className="border rounded p-3 text-center h-100">
                                             <div className="text-muted small mb-1">
@@ -485,21 +521,134 @@ export default function Results() {
                             <div className="card-title">
                                 <h1>Model Portfolio</h1>
                             </div>
-                            <p>Fin has gone through your portfolio and made some adjustments. Look at them below:</p>
+
+                            <p>
+                                Fin has gone through your portfolio and made some adjustments.
+                                Look at them below:
+                            </p>
+
                             <div className="row">
-                                <div className="card shadow-sm">
-                                    <div className="card-body">
-                                        <div className="card-title">
-                                            New Statistics
+                                <div className="card-body d-flex flex-column align-items-center">
+                                    <div className="card-body w-100">
+                                        <div className="row align-items-center">
+
+                                            <div className="col-md-6">
+                                                {result && (
+                                                    <PortfolioScoreDial
+                                                        score={
+                                                            result.model_portfolio[
+                                                            "modeled_portfolio_score"
+                                                            ]
+                                                        }
+                                                    />
+                                                )}
+                                            </div>
+
+                                            <div className="col-md-6">
+                                                {result && result.model_portfolio && (
+                                                    <>
+                                                        <h3>Model Portfolio Stats</h3>
+
+                                                        <div className="table-responsive mt-3">
+                                                            <table className="table table-hover align-middle">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Metric</th>
+                                                                        <th>Current</th>
+                                                                        <th>Model</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <strong>Score</strong>
+                                                                        </td>
+                                                                        <td>
+                                                                            {result.portfolio_score.toFixed(2)}
+                                                                        </td>
+                                                                        <td>
+                                                                            {result.model_portfolio.modeled_portfolio_score.toFixed(
+                                                                                2
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>
+                                                                            <strong>
+                                                                                Expected Return
+                                                                            </strong>
+                                                                        </td>
+                                                                        <td>
+                                                                            {(
+                                                                                result.expected_return *
+                                                                                100
+                                                                            ).toFixed(2)}
+                                                                            %
+                                                                        </td>
+                                                                        <td>
+                                                                            {(
+                                                                                result.model_portfolio
+                                                                                    .modeled_return *
+                                                                                100
+                                                                            ).toFixed(2)}
+                                                                            %
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>
+                                                                            <strong>
+                                                                                Sharpe Ratio
+                                                                            </strong>
+                                                                        </td>
+                                                                        <td>
+                                                                            {result.sharpe_ratio.toFixed(
+                                                                                2
+                                                                            )}
+                                                                        </td>
+                                                                        <td>
+                                                                            {result.model_portfolio.modeled_sharpe_ratio.toFixed(
+                                                                                2
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td>
+                                                                            <strong>HHI</strong>
+                                                                        </td>
+                                                                        <td>
+                                                                            {result.hhi.toFixed(3)}
+                                                                        </td>
+                                                                        <td>
+                                                                            {result.model_portfolio.modeled_hhi.toFixed(
+                                                                                3
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+
+
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
                             <div className="row">
                                 {model_portfolio && (
                                     <div className="table-responsive mt-4">
                                         <h3>Modeled Changes</h3>
+
                                         <p>{model_portfolio.short_reasoning}</p>
+
                                         <table className="table table-hover align-middle">
                                             <thead>
                                                 <tr>
@@ -511,46 +660,106 @@ export default function Results() {
                                             </thead>
 
                                             <tbody>
-                                                {model_portfolio.positions.map((position: any, index: number) => (
-                                                    <tr key={position.ticker}>
-                                                        <td>
-                                                            <strong>{position.ticker}</strong>
-                                                        </td>
+                                                {model_portfolio.positions.map(
+                                                    (position: any, index: number) => (
+                                                        <tr key={position.ticker}>
+                                                            <td>
+                                                                <strong>
+                                                                    {position.ticker}
+                                                                </strong>
+                                                            </td>
 
-                                                        <td>
-                                                            {(portfolio[index].allocation * 100).toFixed(2)}%
-                                                        </td>
+                                                            <td>
+                                                                {(
+                                                                    portfolio[index]
+                                                                        .allocation * 100
+                                                                ).toFixed(2)}
+                                                                %
+                                                            </td>
 
-                                                        <td>
-                                                            {(position.modeled_allocation * 100).toFixed(2)}%
-                                                        </td>
+                                                            <td>
+                                                                {(
+                                                                    position.modeled_allocation *
+                                                                    100
+                                                                ).toFixed(2)}
+                                                                %
+                                                            </td>
 
-                                                        <td>
-                                                            {(
-                                                                (position.modeled_allocation -
-                                                                    portfolio[index].allocation) *
-                                                                100
-                                                            ).toFixed(2)}%
-                                                        </td>
-                                                    </tr>
-                                                ))}
+                                                            <td>
+                                                                {(
+                                                                    (position.modeled_allocation -
+                                                                        portfolio[index]
+                                                                            .allocation) *
+                                                                    100
+                                                                ).toFixed(2)}
+                                                                %
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                )}
                                             </tbody>
                                         </table>
                                     </div>
                                 )}
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
             <div className="row justify-content-center">
-                <div className="col-md-12 mt-4 text-center">
+                <div className="col-md-12 mt-4">
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
-                            <div className="card-title">
-                                <h1>Fintel "Fin" Bot</h1>
+                            <div className="card-title text-center">
+                                <h1>Ask Fin!</h1>
                             </div>
+                            <div
+                                className="mb-3 border rounded"
+                                style={{
+                                    height: "450px",
+                                    overflowY: "auto"
+                                }}
+                            >
+                                {messages.map((msg: any) => (
+                                    <div
+                                        key={msg.chat_id}
+                                        className={`p-4 border-bottom ${msg.role === "assistant" ? "bg-light" : ""
+                                            }`}
+                                    >
+                                        <div className="fw-bold mb-2">
+                                            {msg.role === "assistant" ? "Fin" : "You"}
+                                        </div>
+
+                                        <div>
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {msg.content}
+                                            </ReactMarkdown>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div ref={messagesEndRef} />
+                            </div>
+
+
+                            <form onSubmit={handleSubmit}>
+                                <div className="input-group">
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="fin_box"
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
+                                        placeholder="Ask Fin about your portfolio..."
+                                    />
+
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary px-4"
+                                    >
+                                        Send
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

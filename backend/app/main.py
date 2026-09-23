@@ -19,6 +19,9 @@ from app.agents.reanalyze_graph import app_graph_analysis
 from app.agents.extraction_agent import extract_graph
 from psycopg2.extras import RealDictCursor
 from app.tools.expand_position import expand_tickers
+from app.agents.fin import app_fin_graph
+from pydantic import BaseModel
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 dotenv_path = BASE_DIR / ".env"
 
@@ -81,7 +84,7 @@ def new_data_stream(portfolioId:str):
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             portfolio_data_query = """
                 SELECT portfolio_value, portfolio_beta, volatility, expected_return,sharpe_ratio,username, interpretation_level,hhi,
-                portfolio_score, portfolio_return FROM portfolio WHERE id=%s
+                portfolio_score, portfolio_return, sortino_ratio FROM portfolio WHERE id=%s
             """
             holdings_data_query = """
                 SELECT * FROM portfolio_holding WHERE portfolio_id=%s
@@ -96,6 +99,12 @@ def new_data_stream(portfolioId:str):
                 SELECT * FROM model_portfolio_position WHERE portfolio_id=%s
             """
             get_fin_response = """SELECT * FROM fin_first_response WHERE portfolio_id=%s"""
+
+            fin_messages_query = """
+                        SELECT chat_id, created_at, content, role FROM message WHERE portfolio_id=%s
+                """
+
+            
 
             cur.execute(portfolio_data_query, (portfolioId,))
             result = cur.fetchone()
@@ -151,6 +160,10 @@ def new_data_stream(portfolioId:str):
 
             result["correlation"] = correlation
             result["covariance"] = covariance
+
+            chat_messages = cur.execute(fin_messages_query,(portfolioId,))
+            message_result = cur.fetchall()
+            result["messages"] = message_result
         return dict(result)
 
 @app.post("/portfolio/upload")
@@ -169,6 +182,24 @@ async def upload_file(file: UploadFile = File(...)):
     print(result["portfolio"])
 
     return result["portfolio"]
+
+
+class ChatRequest(BaseModel):
+    message:str
+    portfolioId:str
+
+@app.post("/chat")
+def chat(request:ChatRequest):
+    print("Chat gotten! Graph started")
+    result = app_fin_graph.invoke({
+        "current_question": request.message,
+        "portfolioId": request.portfolioId
+    })
+    print(result)
+    return result["newest_response"]
+
+   
+
     
 @app.get("/getportfolio/{portfolio_id}")
 def get_portfolio(portfolio_id:str):

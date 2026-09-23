@@ -41,7 +41,7 @@ def build_prompt(portfolio, level, metrics, history):
     return prompt
 
 
-def ask_fin(portfolio, level, metrics, history, question):
+def ask_fin(portfolio, level, metrics, history, question, portfolioId):
     instructions = build_prompt(
         portfolio,
         level,
@@ -63,12 +63,12 @@ def ask_fin(portfolio, level, metrics, history, question):
             VALUES (%s, %s, %s)
             """
 
-            cur.execute(new_chat_message, (portfolio["portfolioId"], "user", question))
+            cur.execute(new_chat_message, (portfolioId, "user", question))
 
             cur.execute(
                 new_chat_message,
                 (
-                    portfolio["portfolioId"],
+                    portfolioId,
                     "assistant",
                     response.output_text
                 )

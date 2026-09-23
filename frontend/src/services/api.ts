@@ -63,3 +63,18 @@ export async function uploadPortfolioFile(file: File) {
 
     return await response.json();
 }
+
+export async function SendMessage(message: string, portfolioId: string) {
+    const response = await fetch(`${API_URL}/chat`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            message: message,
+            portfolioId: portfolioId
+        })
+    });
+
+    return await response.json();
+}

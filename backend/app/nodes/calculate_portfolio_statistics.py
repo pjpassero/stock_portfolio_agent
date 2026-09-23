@@ -34,7 +34,14 @@ def build_statistics(state: State):
     mean_returns_series = (
         returns_df.mean().reindex(tickers)
     )
-
+    portfolio_daily_return = returns_df[tickers].to_numpy() @ weights
+    downside_returns = np.minimum(portfolio_daily_return, 0)
+    downside_deviation_daily = np.sqrt(
+        np.mean(downside_returns ** 2)
+    )
+    downside_deviation = (
+        downside_deviation_daily * np.sqrt(252)
+    )
     covariance_df = (
         state["covarianceMatrix"]
         .reindex(index=tickers, columns=tickers)
@@ -77,6 +84,10 @@ def build_statistics(state: State):
         portfolio_return - risk_free
     ) / portfolio_volatility
 
+    sortino_ratio = (
+        (portfolio_return - risk_free) / downside_deviation
+    )
+
     return {
         "weights": weights.tolist(),
         "sectorWeights": sector_weights,
@@ -86,5 +97,6 @@ def build_statistics(state: State):
         "portfolioReturn": float(portfolio_return),
         "portfolioVolatility": float(portfolio_volatility),
         "sharpeRatio": float(sharpe_ratio),
-        "portfolioBeta": float(beta)
+        "portfolioBeta": float(beta),
+        "sortinoRatio":float(sortino_ratio)
     }

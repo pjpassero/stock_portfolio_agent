@@ -34,7 +34,10 @@ def update_all_data(state: State):
             base_risk = %s,
             average_corr = %s,
             corr_risk = %s,
-            portfolio_risk = %s
+            portfolio_risk = %s,
+            expected_return = %s,
+            volatility = %s,
+            sortino_ratio = %s
         WHERE id = %s
     """
 
@@ -67,7 +70,9 @@ def update_all_data(state: State):
         float(state.get("averageCorrelation", 0)),
         float(state.get("correlationRisk", 0)),
         float(state.get("portfolioRisk", 0)),
-
+        float(state.get("portfolioReturn",0)),
+        float(state.get("portfolioVolatility",0)),
+        float(state.get("sortinoRatio",0)),
         str(state["portfolioId"])
     )
 
