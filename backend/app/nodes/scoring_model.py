@@ -70,9 +70,40 @@ def start_scoring(state: State):
         @ weights
     )
 
+    #annual_volatility
     v_raw = np.sqrt(
         252 * daily_portfolio_varaince
     )
+
+    #CCR AND MCR
+
+    covariance_weight_vector = (
+        covariance_matrix @ weights
+    )
+
+    MCR = (
+        (252 * covariance_weight_vector) / v_raw
+    )
+
+
+    CCR = weights * MCR
+
+    PCR = (
+        CCR / v_raw
+    )
+
+    position_risk_contributions = []
+
+    for i, ticker in enumerate(tickers):
+        position_risk_contributions.append({
+            "ticker":ticker,
+            "weight":float(weights[i]),
+            "MCR":float(MCR[i]),
+            "CCR":float(CCR[i]),
+            "PCR":float(PCR[i])
+        })
+
+
 
     v = min(
         v_raw / V_MAX,
@@ -272,5 +303,6 @@ def start_scoring(state: State):
     )
 
     return {
-        "portfolio_score": final_fin_score
+        "portfolio_score": final_fin_score,
+        "risk_fields":position_risk_contributions
     }

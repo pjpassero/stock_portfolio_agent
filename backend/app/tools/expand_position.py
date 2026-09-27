@@ -36,7 +36,10 @@ def expand_tickers(positions: list[dict]) -> list[PositionExpanded]:
                 costBasis=position["costBasis"],
                 currentBasis=position["currentBasis"],
                 shares=position["shares"],
-                assetClass="CASH"
+                assetClass="CASH",
+                MCR=position["MCR"],
+                PCR=position["PCR"],
+                CCR=position["CCR"]
             )
 
         else:
@@ -76,7 +79,10 @@ def expand_tickers(positions: list[dict]) -> list[PositionExpanded]:
                 costBasis=position["costBasis"],
                 currentBasis=position["currentBasis"],
                 shares=position["shares"],
-                assetClass=info.get("quoteType")
+                assetClass=info.get("quoteType"),
+                MCR=position["MCR"],
+                PCR=position["PCR"],
+                CCR=position["CCR"]
             )
 
         expanded_positions.append(new_position)

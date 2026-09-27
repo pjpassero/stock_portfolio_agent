@@ -1,5 +1,6 @@
 from typing import TypedDict
 from app.models.fin_position import FinPosition
+
 class FinState(TypedDict):
     portfolioId:str
     messages:list

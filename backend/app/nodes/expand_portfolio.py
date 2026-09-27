@@ -87,30 +87,6 @@ def expand_position_details(state: State):
         # Both CASH and normal assets reach this
         expanded_positions.append(new_position)
 
-        with get_connection() as conn:
-            with conn.cursor() as cur:
-                insert_query = """
-                    INSERT INTO portfolio_holding
-                    (ticker, cost_basis, current_basis, shares,
-                     allocation, portfolio_id, asset_class)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """
-
-                cur.execute(
-                    insert_query,
-                    (
-                        new_position.ticker,
-                        new_position.costBasis,
-                        new_position.current_price * new_position.shares,
-                        new_position.shares,
-                        new_position.allocation,
-                        state["portfolioId"],
-                        new_position.assetClass
-                    )
-                )
-
-                conn.commit()
-
     return {
         "portfolioExpanded": expanded_positions
     }

@@ -9,8 +9,8 @@ DATA_DIR = BASE_DIR / "data/scoring_model"
 import yfinance as yf
 
 TIME_PERIOD = 5
-V_MAX = 0.40
-D_MAX = 0.50
+V_MAX = 0.40 #max volatility
+D_MAX = 0.50 #max drawdown
 HHI_MAX = 1.0
 HHI_MIN = 1 / 11
 N_TARGET = 30

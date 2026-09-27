@@ -3,6 +3,7 @@ from app.services.reccomend_changes import find_changes
 from app.models.model_portfolio import ModelPortfolio
 from copy import deepcopy
 
+
 def build_new_model(state: State):
     model_positions = deepcopy(state["portfolioExpanded"])
 
@@ -17,9 +18,16 @@ def build_new_model(state: State):
     )
 
     proposed = {}
+    new_positions = {}
 
     for change in new_allocations["changes"]:
-        proposed[change["ticker"]] = change["proposed_allocation"]
+        ticker = change["ticker"]
+        proposed_allocation = float(change["proposed_allocation"])
+
+        proposed[ticker] = proposed_allocation
+
+        if ticker not in portfolio:
+            new_positions[ticker] = proposed_allocation
 
     for stock in model_positions:
         stock.allocation = proposed[stock.ticker]
@@ -31,7 +39,11 @@ def build_new_model(state: State):
 
     return {
         "model_portfolio": model_portfolio,
-        "need_new_calculations": bool(new_allocations["need_new_calculations"]),
-        "new_positions": new_allocations["tickers_added"],
-        "short_explanation":str(new_allocations["short-explanation"])
+        "need_new_calculations": bool(
+            new_allocations["need_new_calculations"]
+        ),
+        "new_positions": new_positions,
+        "short_explanation": str(
+            new_allocations["short-explanation"]
+        )
     }

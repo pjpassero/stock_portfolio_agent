@@ -6,3 +6,6 @@ class FinPosition(BaseModel):
     currentBasis: float
     allocation:float
     assetClass:str
+    MCR:float
+    PCR:float
+    CCR:float

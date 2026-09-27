@@ -1,5 +1,6 @@
 from typing import TypedDict
 from app.models.position import Position
+from app.models.position_risk import PositionRiskContribution
 from app.models.positionExpanded import PositionExpanded
 from app.models.model_portfolio import ModelPortfolio
 import pandas as pd 
@@ -56,10 +57,11 @@ class State(TypedDict):
     portfolioRisk: float #add
     portfolio_score:float #add
     need_new_calculations:bool
-    new_positions:list
+    new_positions:dict[str, float]
     short_explanation:str
     sector_map:dict[str, str]
     sortinoRatio:float
+    risk_fields:list[PositionRiskContribution]
     
 
 

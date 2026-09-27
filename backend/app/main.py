@@ -17,8 +17,8 @@ from app.models.portfolioRequest import PortfolioRequest
 from copy import deepcopy
 from app.agents.reanalyze_graph import app_graph_analysis
 from app.agents.extraction_agent import extract_graph
-from psycopg2.extras import RealDictCursor
 from app.tools.expand_position import expand_tickers
+from psycopg2.extras import RealDictCursor
 from app.agents.fin import app_fin_graph
 from pydantic import BaseModel
 
@@ -124,7 +124,11 @@ def new_data_stream(portfolioId:str):
                     "allocation": holding["allocation"],
                     "shares": holding["shares"],
                     "costBasis": holding["cost_basis"],
-                    "currentBasis": holding["current_basis"]
+                    "currentBasis": holding["current_basis"],
+                    "PCR":holding["pcr"],
+                    "CCR":holding["ccr"],
+                    "MCR":holding["mcr"]
+
                 }
 
                 positions.append(position)

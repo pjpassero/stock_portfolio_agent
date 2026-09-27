@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+python-dotenv
+pydantic
+openai
+langchain-core
+langchain-openai
+langgraph
+numpy
+pandas
+yfinance
+psycopg2-binary
+requests    
+python-multipart
+langchain-chroma
+langchain-text-splitters

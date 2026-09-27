@@ -36,7 +36,8 @@ recalculation and validation.
   calculate whether the proposed allocation actually improves the portfolio.
 
 - Provide a concise reason for each proposed allocation change based on the
-  supplied portfolio analysis.
+  supplied portfolio analysis. Briefly explain why you made the change you did and
+  what you expect it to accomplish in the portfolio.
 
 - Provide an allocation solution that ensures the other statistics are the best they can be. For example,
 don't over concentrate in a single postion.

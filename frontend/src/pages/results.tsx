@@ -4,8 +4,13 @@ import { SendMessage } from "../services/api";
 import { useEffect, useState, useRef } from "react";
 import MatrixTable from "../components/MatrixTable";
 import PortfolioScoreDial from "../components/PortfolioScoreDial";
+import SectorPieChart from "../components/SectorMap";
+import TickerPieChart from "../components/StockMap";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 export default function Results() {
     const { portfolioId } = useParams<{ portfolioId: string }>();
     const [expandedTicker, setExpandedTicker] = useState<string | null>(null);
@@ -79,7 +84,6 @@ export default function Results() {
 
         try {
             const data = await SendMessage(message, portfolioId);
-            console.log(data);
             setMessages(prev => [
                 ...prev,
                 {
@@ -115,8 +119,8 @@ export default function Results() {
             <hr />
             <div className="row">
                 {portfolio.map((stock: any) => (
-                    <div className="col-md-3 mt-4" key={stock.ticker} >
-                        <div className="card h-100 shadow-sm">
+                    <div className="col-md-3 mt-4" key={stock.ticker}>
+                        <div className="card shadow-sm">
                             <div className="card-body">
 
                                 <div className="text-center">
@@ -127,17 +131,17 @@ export default function Results() {
                                     />
 
                                     <h3>{stock.ticker}</h3>
-                                    <h5>{stock.company_name}</h5>
+                                    <h5>{stock.company_name ?? "N/A"}</h5>
 
                                     <h4>
                                         $
-                                        {(stock.current_price * stock.shares).toLocaleString(
-                                            "en-US",
-                                            {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2,
-                                            }
-                                        )}
+                                        {(
+                                            (stock.current_price ?? 0) *
+                                            (stock.shares ?? 0)
+                                        ).toLocaleString("en-US", {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}
                                     </h4>
                                 </div>
 
@@ -162,42 +166,53 @@ export default function Results() {
                                     <div className="mt-3">
 
                                         <p>
-                                            <strong>Holding:</strong> {stock.shares}
+                                            <strong>Holding:</strong>{" "}
+                                            {stock.shares ?? "N/A"}
                                         </p>
 
                                         <p>
-                                            <strong>Cost Basis/Share:</strong> $
-                                            {stock.costBasis.toFixed(2)}
+                                            <strong>Cost Basis/Share:</strong>{" "}
+                                            {stock.costBasis != null
+                                                ? `$${stock.costBasis.toFixed(2)}`
+                                                : "N/A"}
                                         </p>
 
                                         <p>
-                                            <strong>Current Price/Share:</strong> $
-                                            {stock.current_price.toFixed(2)}
+                                            <strong>Current Price/Share:</strong>{" "}
+                                            {stock.current_price != null
+                                                ? `$${stock.current_price.toFixed(2)}`
+                                                : "N/A"}
                                         </p>
 
                                         <p>
                                             <strong>Allocation:</strong>{" "}
-                                            {(stock.allocation * 100).toFixed(2)}%
+                                            {stock.allocation != null
+                                                ? `${(stock.allocation * 100).toFixed(2)}%`
+                                                : "N/A"}
                                         </p>
 
                                         <p>
-                                            <strong>Sector:</strong> {stock.sector}
+                                            <strong>Sector:</strong>{" "}
+                                            {stock.sector ?? "N/A"}
                                         </p>
 
                                         <p>
-                                            <strong>Industry:</strong> {stock.industry}
+                                            <strong>Industry:</strong>{" "}
+                                            {stock.industry ?? "N/A"}
                                         </p>
 
                                         <p>
                                             <strong>P/E:</strong>{" "}
-                                            {stock.trailing_pe
+                                            {stock.trailing_pe != null
                                                 ? stock.trailing_pe.toFixed(2)
                                                 : "N/A"}
                                         </p>
 
                                         <p>
                                             <strong>Beta:</strong>{" "}
-                                            {stock.beta.toFixed(2)}
+                                            {stock.beta != null
+                                                ? stock.beta.toFixed(2)
+                                                : "N/A"}
                                         </p>
 
                                     </div>
@@ -213,13 +228,24 @@ export default function Results() {
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
                             <div className="card-title">
+                                <h1> Headlines </h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-lg-12 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title">
                                 <h1>Correlation Matrix</h1>
                             </div>
                             <p className="text-justify">
                                 Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little relationship between their movements.                            </p>
                             {result && (
                                 <MatrixTable
-                                    title="Covariance Matrix"
+                                    title="Correlation Matrix"
                                     matrix={result.correlation}
                                     decimals={6}
                                 />
@@ -385,42 +411,117 @@ export default function Results() {
                 </div>
             </div>
             <div className="row">
-                <div className="col-md-6 mt-4">
+                <div className="col-md-12 mt-4 text-center">
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
-
-                            <div className="text-center mb-4">
-                                <h1 className="card-title">Portfolio Allocations</h1>
-                                <p className="text-muted mb-0">
-                                    How is your portfolio allocated?
-                                </p>
-                            </div>
-
-
-                        </div>
-                    </div>
-                </div>
-                <div className="col-md-6 mt-4 text-center">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body d-flex flex-column align-items-center">
-
                             <div className="card-title">
-                                <h1>Sector Map</h1>
+                                <h1>Position Risk Contribution</h1>
                             </div>
-
                             <div>
                                 <p>
-                                    Where does your portfolio land?
+                                    <strong>Marginal Risk Contribution:</strong>{" "}
+                                    The change in portfolio volatility resulting from a marginal change
+                                    in the position's weight.
+                                </p>
+
+                                <p>
+                                    <strong>Component Contribution to Risk:</strong>{" "}
+                                    The portion of total portfolio volatility attributable to a single asset.
+                                </p>
+
+                                <p>
+                                    <strong>Percentage Contribution to Risk:</strong>{" "}
+                                    The asset's component contribution expressed as a percentage of
+                                    total portfolio volatility.
                                 </p>
                             </div>
+                            <div className="table-responsive">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ticker</th>
+                                            <th>Allocation</th>
+                                            <th>Marginal Risk Contribution</th>
+                                            <th>Component Contribution to Risk</th>
+                                            <th>Percentage Contribution to Risk</th>
+                                        </tr>
+                                    </thead>
 
-                            <div>
+                                    <tbody>
+                                        {portfolio.map((position) => (
+                                            <tr key={position.ticker}>
+                                                <td>{position.ticker}</td>
 
+                                                <td>
+                                                    {(position.allocation * 100).toFixed(2)}%
+                                                </td>
+
+                                                <td>
+                                                    {(position.MCR * 100).toFixed(2)}%
+                                                </td>
+
+                                                <td>
+                                                    {(position.CCR * 100).toFixed(2)}%
+                                                </td>
+
+                                                <td>
+                                                    {(position.PCR * 100).toFixed(2)}%
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row g-4 mt-1">
+
+                <div className="col-md-6">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body text-center">
+
+                            <h2 className="card-title">
+                                Portfolio Allocation
+                            </h2>
+
+                            <p className="text-muted">
+                                How is your portfolio allocated?
+                            </p>
+
+                            {result?.portfolioExpanded && (
+                                <TickerPieChart
+                                    portfolioExpanded={result.portfolioExpanded}
+                                />
+                            )}
 
                         </div>
                     </div>
                 </div>
+
+                <div className="col-md-6">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body text-center">
+
+                            <h2 className="card-title">
+                                Sector Allocation
+                            </h2>
+
+                            <p className="text-muted">
+                                Which sectors make up the most of your portfolio?
+                            </p>
+
+                            {result?.portfolioExpanded && (
+                                <SectorPieChart
+                                    portfolioExpanded={result.portfolioExpanded}
+                                />
+                            )}
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div className="row justify-content-center">
                 <div className="col-md-12 mt-4 text-center">
@@ -660,43 +761,40 @@ export default function Results() {
                                             </thead>
 
                                             <tbody>
-                                                {model_portfolio.positions.map(
-                                                    (position: any, index: number) => (
+                                                {model_portfolio.positions.map((position: any) => {
+                                                    const currentPosition = portfolio.find(
+                                                        (p: any) => p.ticker === position.ticker
+                                                    );
+
+                                                    const currentAllocation =
+                                                        currentPosition?.allocation ?? 0;
+
+                                                    const modelAllocation =
+                                                        position.modeled_allocation ?? position.allocation ?? 0;
+
+                                                    const change =
+                                                        modelAllocation - currentAllocation;
+
+                                                    return (
                                                         <tr key={position.ticker}>
                                                             <td>
-                                                                <strong>
-                                                                    {position.ticker}
-                                                                </strong>
+                                                                <strong>{position.ticker}</strong>
                                                             </td>
 
                                                             <td>
-                                                                {(
-                                                                    portfolio[index]
-                                                                        .allocation * 100
-                                                                ).toFixed(2)}
-                                                                %
+                                                                {(currentAllocation * 100).toFixed(2)}%
                                                             </td>
 
                                                             <td>
-                                                                {(
-                                                                    position.modeled_allocation *
-                                                                    100
-                                                                ).toFixed(2)}
-                                                                %
+                                                                {(modelAllocation * 100).toFixed(2)}%
                                                             </td>
 
                                                             <td>
-                                                                {(
-                                                                    (position.modeled_allocation -
-                                                                        portfolio[index]
-                                                                            .allocation) *
-                                                                    100
-                                                                ).toFixed(2)}
-                                                                %
+                                                                {(change * 100).toFixed(2)}%
                                                             </td>
                                                         </tr>
-                                                    )
-                                                )}
+                                                    );
+                                                })}
                                             </tbody>
                                         </table>
                                     </div>
@@ -731,7 +829,10 @@ export default function Results() {
                                         </div>
 
                                         <div>
-                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm, remarkMath]}
+                                                rehypePlugins={[rehypeKatex]}
+                                            >
                                                 {msg.content}
                                             </ReactMarkdown>
                                         </div>

@@ -100,7 +100,7 @@ export default function EnterPortfolio() {
 
             setReponse(result.response);
 
-            navigate(`/results/${result.portfolioId}`);
+            navigate(`/results_redone/${result.portfolioId}`);
         }
     }
 

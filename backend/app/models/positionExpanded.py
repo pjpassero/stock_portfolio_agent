@@ -25,3 +25,7 @@ class PositionExpanded(BaseModel):
     fifty_two_week_change: Optional[float] = None
     historicalDataPath: Path
     assetClass:str
+    MCR:Optional[float] = None
+    PCR:Optional[float] = None
+    CCR:Optional[float] = None
+

@@ -8,7 +8,7 @@ def add_position(state: State):
     new_positions = state["new_positions"]
     portfolio = state["portfolioExpanded"]
 
-    for ticker, shares in new_positions.items():
+    for ticker, allocation in new_positions.items():
         print("Position: " + ticker + " will be added.")
 
         info = get_company_data(ticker)
@@ -33,7 +33,7 @@ def add_position(state: State):
             market_cap=info.get("marketCap"),
             trailing_pe=info.get("trailingPE"),
             forward_pe=info.get("forwardPE"),
-            beta=info.get("beta"),
+            beta=info.get("beta") if info.get("beta") is not None else 1.0,            
             dividend_yield=info.get("dividendYield"),
             profit_margin=info.get("profitMargins"),
             revenue_growth=info.get("revenueGrowth"),
@@ -42,12 +42,9 @@ def add_position(state: State):
             return_on_equity=info.get("returnOnEquity"),
             fifty_two_week_change=info.get("52WeekChange"),
             historicalDataPath="NoSet",
-            allocation=(
-                shares * price
-                / state["portfolioValue"]
-            ),
+            allocation= allocation,
             costBasis=price,
-            shares=shares,
+            shares=0,
             assetClass=info.get("quoteType")
         )
 

@@ -30,7 +30,11 @@ def collect_user_data(state: FinState):
             current_basis,
             shares,
             allocation,
-            asset_class
+            asset_class,
+            pcr,
+            ccr,
+            mcr
+
         FROM portfolio_holding
         WHERE portfolio_id = %s
     """
@@ -76,7 +80,10 @@ def collect_user_data(state: FinState):
                 currentBasis=result_row[2],
                 shares=result_row[3],
                 allocation=result_row[4],
-                assetClass=result_row[5]
+                assetClass=result_row[5],
+                PCR=result_row[6],
+                CCR=result_row[7],
+                MCR=result_row[8]
             )
         )
 

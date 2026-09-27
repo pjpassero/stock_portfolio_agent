@@ -3,7 +3,15 @@ from app.services.database_connector import get_connection
 
 
 def update_all_data(state: State):
-    update_fin_database = "INSERT INTO fin_first_response (fin_response, portfolio_id) VALUES (%s, %s)"
+
+    update_fin_database = """
+        INSERT INTO fin_first_response (
+            fin_response,
+            portfolio_id
+        )
+        VALUES (%s, %s)
+    """
+
     update_query = """
         UPDATE portfolio
         SET
@@ -70,16 +78,84 @@ def update_all_data(state: State):
         float(state.get("averageCorrelation", 0)),
         float(state.get("correlationRisk", 0)),
         float(state.get("portfolioRisk", 0)),
-        float(state.get("portfolioReturn",0)),
-        float(state.get("portfolioVolatility",0)),
-        float(state.get("sortinoRatio",0)),
+        float(state.get("portfolioReturn", 0)),
+        float(state.get("portfolioVolatility", 0)),
+        float(state.get("sortinoRatio", 0)),
+
         str(state["portfolioId"])
     )
 
+    risk_by_ticker = {
+        risk["ticker"]: risk
+        for risk in state.get("risk_fields", [])
+    }
+
     with get_connection() as conn:
         with conn.cursor() as cur:
-            cur.execute(update_query, values)
-            cur.execute(update_fin_database, (state["fin_first_response"], state["portfolioId"],))
+
+            cur.execute(
+                update_query,
+                values
+            )
+
+            cur.execute(
+                update_fin_database,
+                (
+                    state["fin_first_response"],
+                    state["portfolioId"]
+                )
+            )
+
+            for position in state["portfolioExpanded"]:
+
+                risk = risk_by_ticker.get(
+                    position.ticker
+                )
+
+                if risk is not None:
+                    mcr = float(risk["MCR"])
+                    ccr = float(risk["CCR"])
+                    pcr = float(risk["PCR"])
+                else:
+                    mcr = 0.0
+                    ccr = 0.0
+                    pcr = 0.0
+
+                insert_query = """
+                    INSERT INTO portfolio_holding (
+                        ticker,
+                        cost_basis,
+                        current_basis,
+                        shares,
+                        allocation,
+                        portfolio_id,
+                        asset_class,
+                        mcr,
+                        ccr,
+                        pcr
+                    )
+                    VALUES (
+                        %s, %s, %s, %s, %s,
+                        %s, %s, %s, %s, %s
+                    )
+                """
+
+                cur.execute(
+                    insert_query,
+                    (
+                        position.ticker,
+                        position.costBasis,
+                        position.current_price * position.shares,
+                        position.shares,
+                        position.allocation,
+                        state["portfolioId"],
+                        position.assetClass,
+                        mcr,
+                        ccr,
+                        pcr
+                    )
+                )
+
         conn.commit()
 
     return {}
