@@ -20,6 +20,9 @@ from app.agents.extraction_agent import extract_graph
 from app.tools.expand_position import expand_tickers
 from psycopg2.extras import RealDictCursor
 from app.agents.fin import app_fin_graph
+
+from fastapi.responses import StreamingResponse
+
 from pydantic import BaseModel
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -219,9 +222,16 @@ def get_portfolio(portfolio_id:str):
             row = cur.fetchone()
             result = row[0]
     return result
+
+def stream_analysis(graph_input):
+     for event in app_graph.stream(graph_input):
+        node_name = next(iter(event))
+
+        yield f"data: {node_name}\n\n"
+
+
 @app.post("/portfolio/analyze")
 def analyze_portfolio(portfoliorequest:PortfolioRequest):
-    print(portfoliorequest)
     random_id = uuid.uuid4()
 
     with get_connection() as conn:
@@ -234,7 +244,7 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
                 (random_id,),
             )
     conn.commit()
-    print(portfoliorequest.portfolio)
+
     totalPortfolioValue = 0.0
     for stock in portfoliorequest.portfolio:
         print(stock.ticker)
@@ -252,6 +262,9 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
         "username":portfoliorequest.username,
         "interpretation_level":portfoliorequest.level
     })
+   
+
+
     model_state = deepcopy(result)
 
     model_state["portfolioExpanded"] = deepcopy(
@@ -265,38 +278,5 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
     result["model_portfolio"].sharpe_ratio = model_result["sharpeRatio"]
     result["model_portfolio"].portfolio_score = model_result["portfolio_score"]
     result["model_portfolio"].hhi = model_result["hhi"]
-
-    print(model_result)
-    #print(result)
-
-
-
-    for key, value in result.items():
-        try:
-            jsonable_encoder(value)
-            print(f"{key}: OK")
-        except Exception as e:
-            print(f"{key}: FAILED")
-            print(type(value))
-            raise
-
-    json_result = jsonable_encoder(result)
-
-    with get_connection() as conn:
-         with conn.cursor() as cur:
-            cur.execute(
-                """
-                UPDATE portfolio
-                SET json_blob_temp = %s, username=%s, interpretation_level=%s
-                WHERE id = %s
-                """,
-                (
-                    Json(json_result),
-                    str(portfoliorequest.username),
-                    str(portfoliorequest.level),
-                    str(random_id),
-                ),
-            )
-    conn.commit()
 
     return result

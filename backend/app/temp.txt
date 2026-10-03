@@ -9,3 +9,24 @@
                     """
 
             cur.execute(insert_query, (float(state["etfRisk"]),float(state["etfVolatility"]), float(state["etfRisk"]), state["portfolioId"]))
+
+
+ for event in app_graph.stream({
+        "portfolio": portfoliorequest.portfolio,
+        "portfolioValue": totalPortfolioValue,
+        "portfolioId": random_id,
+        "username": portfoliorequest.username,
+        "interpretation_level": portfoliorequest.level
+    }):
+        graph_input = {
+    "portfolio": portfoliorequest.portfolio,
+    "portfolioValue": totalPortfolioValue,
+    "portfolioId": random_id,
+    "username": portfoliorequest.username,
+    "interpretation_level": portfoliorequest.level
+}
+
+    #return StreamingResponse(
+        #stream_analysis(graph_input),
+        #media_type="text/event-stream"
+    )

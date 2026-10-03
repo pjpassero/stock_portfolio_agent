@@ -203,15 +203,15 @@ export default function Home() {
                     </section>
                 </main>
 
-                <footer className="text-center text-muted py-4 border-top">
-                    <p className="small mb-1">
-                        FinLab is a portfolio analysis project built for
-                        educational and informational purposes.
-                    </p>
-
-                    <p className="small mb-0">
-                        © 2026  FinLab
-                    </p>
+                <footer className="bg-white border-top text-center py-4 mt-5">
+                    <div className="container">
+                        <p className="mb-0">
+                            © {new Date().getFullYear()} FinLab Portfolio analytics provided for educational purposes only.
+                            FinLab is not a financial advisory tool, and we are not responsible for investment
+                            decisions made using this platform. Please consult a financial professional before
+                            making investment decisons. AI-generated content may contain inaccuracies.
+                        </p>
+                    </div>
                 </footer>
 
             </div>

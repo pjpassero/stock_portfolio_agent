@@ -18,7 +18,6 @@ export async function getTicker(ticker: string) {
 
     return data;
 }
-
 export async function analyzePortfolio(portfolio: Position[], username: string, level: string) {
     const response = await fetch(
         `${API_URL}/portfolio/analyze`, {
@@ -36,6 +35,8 @@ export async function analyzePortfolio(portfolio: Position[], username: string, 
     )
     return await response.json();
 }
+
+
 
 export async function getPortfolio(portfolioId: string) {
     //const response = await fetch(`${API_URL}/getportfolio/${portfolioId}`);

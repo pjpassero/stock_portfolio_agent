@@ -16,7 +16,9 @@ export default function EnterPortfolio() {
     const [username, setUsername] = useState("");
     const [experience, setExperience] = useState("");
     const [portfolioFile, setPortfolioFile] = useState<File | null>(null);
-
+    const [loading, setLoading] = useState(false);
+    const [showStateAnalysis, setStateAnalysis] = useState(false);
+    const [analysisSteps, setAnalysisSteps] = useState<string[]>(["Loading Portfolio Data"]);
     const navigate = useNavigate();
 
 
@@ -72,6 +74,7 @@ export default function EnterPortfolio() {
         }
 
         try {
+            setLoading(true);
             const result = await uploadPortfolioFile(portfolioFile);
 
             console.log("Imported portfolio:", result);
@@ -82,6 +85,8 @@ export default function EnterPortfolio() {
         } catch (err) {
             console.error("Portfolio upload failed:", err);
             alert("Unable to import portfolio");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -90,6 +95,10 @@ export default function EnterPortfolio() {
         if (portfolio.length === 0) {
             alert("Please add a position");
         } else {
+            setAnalysisSteps([]);
+            setStateAnalysis(true);
+
+
             const result = await analyzePortfolio(
                 portfolio,
                 username,
@@ -100,9 +109,11 @@ export default function EnterPortfolio() {
 
             setReponse(result.response);
 
-            navigate(`/results_redone/${result.portfolioId}`);
+            navigate(`/results/${result.portfolioId}`);
         }
     }
+
+
 
 
     return (
@@ -232,7 +243,18 @@ export default function EnterPortfolio() {
                                                             className="btn btn-primary"
                                                             onClick={uploadPortfolio}
                                                         >
-                                                            Import Portfolio
+                                                            {loading ? (
+                                                                <>
+                                                                    <span
+                                                                        className="spinner-border spinner-border-sm me-2"
+                                                                        role="status"
+                                                                        aria-hidden="true"
+                                                                    />
+                                                                    Importing Portfolio...
+                                                                </>
+                                                            ) : (
+                                                                "Import Portfolio"
+                                                            )}
                                                         </button>
                                                     </div>
                                                 </>
@@ -416,6 +438,54 @@ export default function EnterPortfolio() {
 
                 </div>
             </div>
+            {showStateAnalysis && (
+                <div
+                    className="modal show d-block"
+                    tabIndex={-1}
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content rounded-4 border-0 shadow">
+
+                            <div className="modal-header">
+                                <h5 className="modal-title fw-bold">
+                                    Analyzing Your Portfolio
+                                </h5>
+                            </div>
+
+                            <div className="modal-body">
+                                <div className="mb-3">
+                                    <div
+                                        className="spinner-border spinner-border-sm me-2"
+                                        role="status"
+                                    />
+                                    <span className="fw-semibold">
+                                        Fin is working...
+                                    </span>
+                                </div>
+
+                                {analysisSteps.map((step, index) => (
+                                    <div key={index} className="mb-2">
+                                        ✓ {step}
+                                    </div>
+                                ))}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <footer className="bg-white border-top text-center py-4 mt-5">
+                <div className="container">
+                    <p className="mb-0">
+                        © {new Date().getFullYear()} FinLab Portfolio analytics provided for educational purposes only.
+                        FinLab is not a financial advisory tool, and we are not responsible for investment
+                        decisions made using this platform. Please consult a financial professional before
+                        making investment decisons. AI-generated content may contain inaccuracies.
+                    </p>
+                </div>
+            </footer>
         </div>
     );
 }

@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import InMemorySaver
 from app.states.state import State
 
 from app.nodes.get_portfolio_response import get_portfolio_response
@@ -56,4 +57,8 @@ graph.add_edge("update_data", END)
 
 
 
-app_graph = graph.compile()
+
+checkpointer = InMemorySaver()
+app_graph = graph.compile(
+    checkpointer=checkpointer
+)

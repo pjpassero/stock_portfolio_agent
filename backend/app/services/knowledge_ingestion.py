@@ -59,7 +59,6 @@ def ingest_knowledge():
     with get_connection() as conn:
         with conn.cursor() as cur:
 
-            # Remove old knowledge
             cur.execute("""
                 DELETE FROM knowledge_chunks
             """)

@@ -865,6 +865,16 @@ export default function Results() {
                     </div>
                 </div>
             </div>
+            <footer className="bg-white border-top text-center py-4 mt-5">
+                <div className="container">
+                    <p className="mb-0">
+                        © {new Date().getFullYear()} FinLab Portfolio analytics provided for educational purposes only.
+                        FinLab is not a financial advisory tool, and we are not responsible for investment
+                        decisions made using this platform. Please consult a financial professional before
+                        making investment decisons. AI-generated content may contain inaccuracies.
+                    </p>
+                </div>
+            </footer>
         </div>
     );
 }
