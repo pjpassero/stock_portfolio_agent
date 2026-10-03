@@ -21,7 +21,7 @@ capabilities. <br>
 
 All dependencies can be found in <strong> Requirements.txt </strong>
 
-<h1><Frontend/h1>
+<h1><Frontend </h1>
 
 The frontend for this project was built on React with Bootstrap styling and formatting. There are many React packages used, like a package that renders
 latex for mathematical functions and markdown for LLM responses.
