@@ -254,7 +254,6 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
 
 
 
-
     result = app_graph.invoke({
         "portfolio": portfoliorequest.portfolio,
         "portfolioValue":totalPortfolioValue,

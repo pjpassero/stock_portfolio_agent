@@ -59,6 +59,4 @@ graph.add_edge("update_data", END)
 
 
 checkpointer = InMemorySaver()
-app_graph = graph.compile(
-    checkpointer=checkpointer
-)
+app_graph = graph.compile()

@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { getTicker } from "../services/api";
 import { analyzePortfolio } from "../services/api";
 import { uploadPortfolioFile } from "../services/api";
 import type { Position } from "../types/Position";
 import { useNavigate } from "react-router-dom";
-
+import { supabase } from "../services/supabase";
+import { useEffect, useState } from "react";
 
 export default function EnterPortfolio() {
     const [portfolio, setPortfolio] = useState<Position[]>([]);
@@ -113,6 +113,30 @@ export default function EnterPortfolio() {
         }
     }
 
+    useEffect(() => {
+        async function get_user_first_name() {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (!session) {
+                return;
+            }
+            console.log("AUTH USER ID:", session.user.id);
+
+            const { data, error } = await supabase.from("user")
+                .select("first_name")
+                .eq("user_uuid", session.user.id)
+                .single();
+
+            if (error) {
+                console.log(error);
+                return;
+            }
+            setUsername(data.first_name);
+
+        }
+
+        get_user_first_name();
+    }, []);
 
 
 
@@ -275,7 +299,7 @@ export default function EnterPortfolio() {
 
                             <div className="text-center mb-4">
                                 <h1 className="fw-bold mb-2">
-                                    My Portfolio
+                                    {username}'s Portfolio
                                 </h1>
 
                                 <p className="text-muted mb-0">
@@ -291,8 +315,10 @@ export default function EnterPortfolio() {
                                         <tr>
                                             <th>Ticker</th>
                                             <th>Shares</th>
-                                            <th>Cost Basis</th>
-                                            <th>Current Price</th>
+                                            <th>Total Cost Basis</th>
+                                            <th>Current Basis</th>
+                                            <th>Current Share Price</th>
+
                                         </tr>
                                     </thead>
 
@@ -311,9 +337,11 @@ export default function EnterPortfolio() {
                                                 </td>
 
                                                 <td>
-                                                    ${Number(position.costBasis).toFixed(2)}
-                                                </td>
+                                                    ${(Number(position.costBasis) * Number(position.shares)).toFixed(2)}                                                </td>
 
+                                                <td>
+                                                    ${(Number(position.currentBasis) * Number(position.shares)).toFixed(2)}
+                                                </td>
                                                 <td>
                                                     ${Number(position.currentBasis).toFixed(2)}
                                                 </td>
@@ -328,25 +356,26 @@ export default function EnterPortfolio() {
 
                             <hr className="my-4" />
 
+                            {/* Remove
+                                <div className="mb-4">
+                                    <label
+                                        htmlFor="username"
+                                        className="form-label fw-semibold"
+                                    >
+                                        Your Name
+                                    </label>
 
-                            <div className="mb-4">
-                                <label
-                                    htmlFor="username"
-                                    className="form-label fw-semibold"
-                                >
-                                    Your Name
-                                </label>
-
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    id="username"
-                                    placeholder="Enter your name"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                />
-                            </div>
-
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="username"
+                                        placeholder="Enter your name"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                    />
+                                </div>
+                                */
+                            }
 
                             <div className="mb-4">
 

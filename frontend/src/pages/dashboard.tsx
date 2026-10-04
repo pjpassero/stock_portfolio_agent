@@ -1,7 +1,35 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabase";
+import type { User } from "@supabase/supabase-js";
 
 export default function Home() {
     const navigate = useNavigate();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+
+        const check_session = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session) {
+                setUser(session.user);
+            } else {
+                setUser(null);
+            }
+
+        };
+        check_session();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        })
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+
 
     return (
         <div className="container-fluid">
@@ -17,20 +45,37 @@ export default function Home() {
                             FinLab
                         </span>
 
-                        <div className="d-flex gap-2">
-                            <button
-                                className="btn btn-outline-primary"
-                                onClick={() => navigate("/login")}
-                            >
-                                Log In
-                            </button>
+                        <div className="d-flex gap-2 align-items-center">
+                            {user ? (
+                                <>
+                                    <span className="fw-semibold">
+                                        {user.user_metadata.firstname ?? user.email}
+                                    </span>
 
-                            <button
-                                className="btn btn-primary"
-                                onClick={() => navigate("/register")}
-                            >
-                                Register
-                            </button>
+                                    <button
+                                        className="btn btn-outline-danger"
+                                        onClick={() => supabase.auth.signOut()}
+                                    >
+                                        Log Out
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <button
+                                        className="btn btn-outline-primary"
+                                        onClick={() => navigate("/login")}
+                                    >
+                                        Log In
+                                    </button>
+
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => navigate("/register")}
+                                    >
+                                        Register
+                                    </button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </nav>

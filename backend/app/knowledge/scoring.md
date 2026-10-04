@@ -106,9 +106,9 @@ D = normalized drawdown risk
 
 ## Interpretation
 
-Higher scores indicate greater modeled portfolio risk.
+Higher scores indicate greater safety.
 
-Lower scores indicate lower modeled portfolio risk.
+Lower scores indicate lower safety.
 
 ## Limitations
 
