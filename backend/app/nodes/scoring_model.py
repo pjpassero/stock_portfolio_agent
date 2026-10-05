@@ -64,6 +64,18 @@ def start_scoring(state: State):
 
     covariance_matrix = state["covarianceMatrix"]
 
+    if hasattr(covariance_matrix, "loc"):
+        covariance_matrix = (
+            covariance_matrix
+            .loc[tickers, tickers]
+            .to_numpy()
+        )
+    else:
+        covariance_matrix = np.array(
+            covariance_matrix,
+            dtype=float
+        )
+
     daily_portfolio_varaince = (
         weights.T
         @ covariance_matrix
