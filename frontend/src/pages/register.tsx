@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { supabase } from "../services/supabase";
 
 
@@ -11,7 +11,6 @@ export default function Register() {
     const [password, setPassword] = useState("");
     const [firstname, setFirstName] = useState("");
     const [lastname, setLastName] = useState("");
-    const [registerError, setRegisterError] = useState("");
     const [form_error, setError] = useState("");
 
     async function ProcessRegistration(e: React.FormEvent<HTMLFormElement>) {
@@ -34,14 +33,12 @@ export default function Register() {
             console.error("Code:", error.code);
             console.error("Message:", error.message);
 
-            setRegisterError(error.message);
             setError(error.message);
             return;
         }
 
 
         if (!data.user) {
-            setRegisterError("Unable to create user!");
             setError("Unable to create user!");
             return;
         }
@@ -58,7 +55,6 @@ export default function Register() {
 
         if (userError) {
             console.error("User table insert failed:", userError);
-            setRegisterError("Account created, but profile creation failed.");
             return;
         }
 

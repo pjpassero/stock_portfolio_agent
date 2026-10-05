@@ -1,4 +1,3 @@
-import { useParams } from "react-router-dom";
 import { getPortfolio } from "../services/api";
 import { SendMessage } from "../services/api";
 import { useEffect, useState, useRef } from "react";
@@ -13,7 +12,7 @@ import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 
 export default function Demo() {
-    const [portfolioId, setId] = useState("demo");
+    const [portfolioId] = useState("demo");
     const [expandedTicker, setExpandedTicker] = useState<string | null>(null);
     const [portfolio, setPortfolio] = useState<any[]>([]);
     const [portfolioValue, setPortfolioValue] = useState(0);
@@ -25,7 +24,6 @@ export default function Demo() {
     const [messages, setMessages] = useState<any[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    let sum = 0;
     useEffect(() => {
         async function queryPortfolio() {
 

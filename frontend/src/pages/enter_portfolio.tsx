@@ -1,5 +1,4 @@
 import { analyze_portfolio, getTicker } from "../services/api";
-import { analyzePortfolio } from "../services/api";
 import { uploadPortfolioFile } from "../services/api";
 import type { Position } from "../types/Position";
 import { useNavigate } from "react-router-dom";
@@ -9,10 +8,9 @@ import { useEffect, useState } from "react";
 export default function EnterPortfolio() {
     const [portfolio, setPortfolio] = useState<Position[]>([]);
     const [ticker, setTicker] = useState("");
-    const [price, setPrice] = useState("");
     const [shareCount, setShareCount] = useState("");
     const [costBasis, setCostBasis] = useState("");
-    const [response, setReponse] = useState("No Analysis Yet!");
+    //const [response, setReponse] = useState("No Analysis Yet!");
     const [username, setUsername] = useState("");
     const [experience, setExperience] = useState("");
     const [portfolioFile, setPortfolioFile] = useState<File | null>(null);
@@ -45,7 +43,6 @@ export default function EnterPortfolio() {
                     ? Number(costBasis)
                     : Number(result.price);
 
-            setPrice(currentPrice.toString());
 
             const newPosition: Position = {
                 ticker: ticker.toUpperCase(),
@@ -116,7 +113,7 @@ export default function EnterPortfolio() {
             setStateAnalysis(true);
 
 
-            const result = await analyze_portfolio(
+            await analyze_portfolio(
                 portfolio,
                 username,
                 experience,
