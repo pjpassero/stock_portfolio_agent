@@ -7,7 +7,7 @@ console.log("API URL FROM VITE:", API_URL);
 export async function getTicker(ticker: string) {
 
     const response = await fetch(
-        `http://localhost:8000/get_ticker_details/${ticker}`
+        `${API_URL}/get_ticker_details/${ticker}`
     );
 
     if (!response.ok) {
