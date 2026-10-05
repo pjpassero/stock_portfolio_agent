@@ -1,6 +1,6 @@
 import type { Position } from "../types/Position";
 
-const API_URL = "http://localhost:8000";
+const API_URL = import.meta.env.API_URL;
 
 export async function getTicker(ticker: string) {
 
