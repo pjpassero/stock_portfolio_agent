@@ -9,16 +9,23 @@ export async function getTicker(ticker: string) {
     );
 
     if (!response.ok) {
-        throw new Error("Request failed");
+        const errorData = await response.json();
+
+        throw new Error(errorData.detail);
+    }
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail);
     }
 
     const data = await response.json();
 
-    console.log(data);
 
     return data;
 }
-export async function analyzePortfolio(portfolio: Position[], username: string, level: string) {
+
+export async function analyzePortfolio(portfolio: Position[], username: string, level: string, user_uuid: string) {
     const response = await fetch(
         `${API_URL}/portfolio/analyze`, {
         method: "POST",
@@ -28,7 +35,8 @@ export async function analyzePortfolio(portfolio: Position[], username: string, 
         body: JSON.stringify({
             portfolio: portfolio,
             username: username,
-            level: level
+            level: level,
+            user_uuid: user_uuid
         }),
 
     }
@@ -36,6 +44,67 @@ export async function analyzePortfolio(portfolio: Position[], username: string, 
     return await response.json();
 }
 
+
+export async function analyze_portfolio(portfolio: Position[], username: string, level: string, user_uuid: string, on_progress: (node: string) => void, on_complete: (portfolioId: string) => void) {
+    const response = await fetch(`${API_URL}/portfolio/analyze`,
+        {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify({
+                portfolio: portfolio,
+                username: username,
+                level: level,
+                user_uuid: user_uuid
+            })
+        }
+    );
+
+    if (!response) {
+        throw new Error("No response stream");
+    }
+
+    const body = response.body;
+
+    if (!body) {
+        throw new Error("No response stream");
+    }
+
+    const reader = body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+        const { value, done } = await reader.read();
+
+        if (done) {
+            break;
+        }
+
+        const chunk = decoder.decode(value, { stream: true });
+
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+            if (line.startsWith("data: ")) {
+                const jsonString = line.slice(6);
+                const event = JSON.parse(jsonString);
+                if (event.type === "progress") {
+                    on_progress(event.node);
+                }
+                if (event.type === "complete") {
+                    on_complete(event.portfolioId);
+                }
+            }
+        }
+
+
+
+    }
+
+
+
+}
 
 
 export async function getPortfolio(portfolioId: string) {

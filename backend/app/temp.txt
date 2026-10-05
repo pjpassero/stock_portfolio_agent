@@ -30,3 +30,31 @@
         #stream_analysis(graph_input),
         #media_type="text/event-stream"
     )
+
+
+
+    """
+    result = app_graph.invoke({
+        "portfolio": portfoliorequest.portfolio,
+        "portfolioValue":totalPortfolioValue,
+        "portfolioId":random_id,
+        "username":portfoliorequest.username,
+        "interpretation_level":portfoliorequest.level
+    })
+   
+
+
+    model_state = deepcopy(result)
+
+    model_state["portfolioExpanded"] = deepcopy(
+        result["model_portfolio"].positions
+    )
+    model_result = app_graph_analysis.invoke(model_state)
+
+
+    result["model_portfolio"].expected_return = model_result["portfolioReturn"]
+    result["model_portfolio"].volatility = model_result["portfolioVolatility"]
+    result["model_portfolio"].sharpe_ratio = model_result["sharpeRatio"]
+    result["model_portfolio"].portfolio_score = model_result["portfolio_score"]
+    result["model_portfolio"].hhi = model_result["hhi"]
+    """

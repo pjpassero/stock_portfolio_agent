@@ -1,4 +1,4 @@
-import { getTicker } from "../services/api";
+import { analyze_portfolio, getTicker } from "../services/api";
 import { analyzePortfolio } from "../services/api";
 import { uploadPortfolioFile } from "../services/api";
 import type { Position } from "../types/Position";
@@ -19,8 +19,22 @@ export default function EnterPortfolio() {
     const [loading, setLoading] = useState(false);
     const [showStateAnalysis, setStateAnalysis] = useState(false);
     const [analysisSteps, setAnalysisSteps] = useState<string[]>(["Loading Portfolio Data"]);
+    const [user_uuid, setID] = useState("");
     const navigate = useNavigate();
-
+    const analysisStepNames: Record<string, string> = {
+        expand_details: "Gathering Security Data",
+        classify_assets: "Classifying Portfolio Assets",
+        build_returns_matrix: "Analyzing Historical Returns",
+        build_covariance_matrix: "Calculating Asset Risk Relationships",
+        build_correlation_matrix: "Analyzing Asset Correlations",
+        calculate_statistics: "Calculating Portfolio Statistics",
+        score: "Evaluating Portfolio Risk",
+        get_first_analysis: "Generating Portfolio Analysis",
+        adjust_portfolio: "Building Model Portfolio",
+        update_data: "Gathering Model Portfolio Data",
+        model_analysis: "Analyzing Model Portfolio",
+    };
+    const [tickerError, setTickerError] = useState("");
 
     async function addToPortfolio() {
         try {
@@ -44,6 +58,9 @@ export default function EnterPortfolio() {
 
         } catch (err) {
             console.error(err);
+            if (err instanceof Error) {
+                setTickerError(err.message);
+            }
         }
 
         setTicker("");
@@ -99,17 +116,26 @@ export default function EnterPortfolio() {
             setStateAnalysis(true);
 
 
-            const result = await analyzePortfolio(
+            const result = await analyze_portfolio(
                 portfolio,
                 username,
-                experience
+                experience,
+                user_uuid,
+                (node: string) => {
+
+                    const readableStep =
+                        analysisStepNames[node] ?? "Analyzing Portfolio";
+
+                    setAnalysisSteps(prev => [
+                        ...prev,
+                        readableStep
+                    ]);
+                },
+                (portfolioId: string) => {
+                    navigate(`/results/${portfolioId}`);
+                }
+
             );
-
-            console.log(result);
-
-            setReponse(result.response);
-
-            navigate(`/results/${result.portfolioId}`);
         }
     }
 
@@ -121,7 +147,7 @@ export default function EnterPortfolio() {
                 return;
             }
             console.log("AUTH USER ID:", session.user.id);
-
+            setID(session.user.id);
             const { data, error } = await supabase.from("user")
                 .select("first_name")
                 .eq("user_uuid", session.user.id)
@@ -158,7 +184,11 @@ export default function EnterPortfolio() {
                                     Enter a position below to add it to your portfolio.
                                 </p>
                             </div>
-
+                            {tickerError && (
+                                <div className="text-danger mb-3">
+                                    {tickerError}
+                                </div>
+                            )}
                             <form>
                                 <div className="row g-3">
 

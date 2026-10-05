@@ -23,6 +23,7 @@ export default function Results() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<any[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
     let sum = 0;
     useEffect(() => {
         async function queryPortfolio() {

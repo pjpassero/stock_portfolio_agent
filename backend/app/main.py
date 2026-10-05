@@ -20,6 +20,8 @@ from app.agents.extraction_agent import extract_graph
 from app.tools.expand_position import expand_tickers
 from psycopg2.extras import RealDictCursor
 from app.agents.fin import app_fin_graph
+import json
+from fastapi import HTTPException
 
 from fastapi.responses import StreamingResponse
 
@@ -62,23 +64,39 @@ def home():
 def ticker_details(ticker: str):
 
     ticker = ticker.upper()
-    if(ticker == "CASH"):
-        return {
-                "ticker": ticker.upper(),
-                "price":"N/A"
-            }
 
-    else:
-        info = get_company_data(ticker)
-        price = (
-                info.get("currentPrice")
-                or info.get("regularMarketPrice")
-                or info.get("previousClose")
-            )
+    if ticker == "CASH":
         return {
-            "ticker": ticker.upper(),
-            "price": price
-         }
+            "ticker": ticker,
+            "price": "N/A"
+        }
+
+    info = get_company_data(ticker)
+
+    if not info:
+        raise HTTPException(
+            status_code=404,
+            detail="Ticker not found! Try again!"
+        )
+
+    price = (
+        info.get("currentPrice")
+        or info.get("regularMarketPrice")
+        or info.get("previousClose")
+    )
+
+    if price is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Ticker not found! Try again!"
+        )
+
+    return {
+        "ticker": ticker,
+        "price": price
+    }
+
+       
 
 
 @app.get("/endpoint_test/new_data_stream/{portfolioId}")
@@ -224,10 +242,54 @@ def get_portfolio(portfolio_id:str):
     return result
 
 def stream_analysis(graph_input):
-     for event in app_graph.stream(graph_input):
-        node_name = next(iter(event))
 
-        yield f"data: {node_name}\n\n"
+    result = deepcopy(graph_input)
+
+    for event in app_graph.stream(graph_input):
+        node_name = next(iter(event))
+        node_result = event[node_name]
+
+        if isinstance(node_result, dict):
+            result.update(node_result)
+
+        event_data = {
+            "type": "progress",
+            "node": node_name
+        }
+
+        yield f"data: {json.dumps(event_data)}\n\n"
+
+
+    model_state = deepcopy(result)
+
+    model_state["portfolioExpanded"] = deepcopy(
+        result["model_portfolio"].positions
+    )
+
+    model_event = {
+        "type": "progress",
+        "node": "model_analysis"
+    }
+
+    yield f"data: {json.dumps(model_event)}\n\n"
+
+    model_result = app_graph_analysis.invoke(model_state)
+
+    result["model_portfolio"].expected_return = model_result["portfolioReturn"]
+    result["model_portfolio"].volatility = model_result["portfolioVolatility"]
+    result["model_portfolio"].sharpe_ratio = model_result["sharpeRatio"]
+    result["model_portfolio"].portfolio_score = model_result["portfolio_score"]
+    result["model_portfolio"].hhi = model_result["hhi"]
+
+
+    complete_data = {
+        "type": "complete",
+        "portfolioId": str(graph_input["portfolioId"])
+    }
+
+    yield f"data: {json.dumps(complete_data)}\n\n"
+    print("STREAM FINISHED")
+
 
 
 @app.post("/portfolio/analyze")
@@ -243,6 +305,10 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
                 """,
                 (random_id,),
             )
+            cur.execute("""
+                UPDATE "user" SET portfolio_id=%s WHERE user_uuid=%s""",
+                (random_id, str(portfoliorequest.user_uuid),)
+            )
     conn.commit()
 
     totalPortfolioValue = 0.0
@@ -252,30 +318,16 @@ def analyze_portfolio(portfoliorequest:PortfolioRequest):
         print(stock.costBasis)
         totalPortfolioValue += stock.currentBasis * stock.shares
 
+    graph_input = {
+            "portfolio": portfoliorequest.portfolio,
+            "portfolioValue": totalPortfolioValue,
+            "portfolioId": random_id,
+            "username": portfoliorequest.username,
+            "interpretation_level": portfoliorequest.level
+        }
 
 
-    result = app_graph.invoke({
-        "portfolio": portfoliorequest.portfolio,
-        "portfolioValue":totalPortfolioValue,
-        "portfolioId":random_id,
-        "username":portfoliorequest.username,
-        "interpretation_level":portfoliorequest.level
-    })
-   
-
-
-    model_state = deepcopy(result)
-
-    model_state["portfolioExpanded"] = deepcopy(
-        result["model_portfolio"].positions
+    return StreamingResponse(
+        stream_analysis(graph_input),
+        media_type="text/event-stream"
     )
-    model_result = app_graph_analysis.invoke(model_state)
-
-
-    result["model_portfolio"].expected_return = model_result["portfolioReturn"]
-    result["model_portfolio"].volatility = model_result["portfolioVolatility"]
-    result["model_portfolio"].sharpe_ratio = model_result["sharpeRatio"]
-    result["model_portfolio"].portfolio_score = model_result["portfolio_score"]
-    result["model_portfolio"].hhi = model_result["hhi"]
-
-    return result

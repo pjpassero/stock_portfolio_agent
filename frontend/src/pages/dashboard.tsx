@@ -6,7 +6,7 @@ import type { User } from "@supabase/supabase-js";
 export default function Home() {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
-
+    const [portfolio_id, setPortfolioId] = useState("");
     useEffect(() => {
 
         const check_session = async () => {
@@ -14,6 +14,18 @@ export default function Home() {
 
             if (session) {
                 setUser(session.user);
+                const { data, error } = await supabase.from("user")
+                    .select("portfolio_id")
+                    .eq("user_uuid", session.user.id)
+                    .single();
+
+                if (error) {
+                    console.log("Error in database retrieval:" + error);
+                } else {
+                    setPortfolioId(data.portfolio_id);
+                    console.log("Portfolio ID:", data.portfolio_id);
+                }
+
             } else {
                 setUser(null);
             }
@@ -49,7 +61,7 @@ export default function Home() {
                             {user ? (
                                 <>
                                     <span className="fw-semibold">
-                                        {user.user_metadata.firstname ?? user.email}
+                                        <a href={"results/" + portfolio_id}>{user.user_metadata.firstname ?? user.email}</a>
                                     </span>
 
                                     <button
