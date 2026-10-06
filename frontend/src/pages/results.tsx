@@ -224,58 +224,6 @@ export default function Results() {
                 ))}
             </div>
             <div className="row">
-                <div className="col-lg-12 mt-4 text-center">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body">
-                            <div className="card-title">
-                                <h1> Headlines </h1>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-lg-12 mt-4 text-center">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body">
-                            <div className="card-title">
-                                <h1>Correlation Matrix</h1>
-                            </div>
-                            <p className="text-justify">
-                                Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little relationship between their movements.                            </p>
-                            {result && (
-                                <MatrixTable
-                                    title="Correlation Matrix"
-                                    matrix={result.correlation}
-                                    decimals={6}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-lg-12 mt-4 text-center">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body">
-                            <div className="card-title">
-                                <h1>Covariance Matrix</h1>
-                            </div>
-                            <p className="text-justify">
-                                Covariance measures how two assets move relative to one another. A positive covariance indicates they tend to move in the same direction, while a negative covariance indicates they tend to move in opposite directions. Larger positive values suggest a stronger tendency to move together.
-                            </p>
-                            {result && (
-                                <MatrixTable
-                                    title="Covariance Matrix"
-                                    matrix={result.covariance}
-                                    decimals={6}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="row">
                 <div className="col-md-6 mt-4">
                     <div className="card h-100 shadow-sm">
                         <div className="card-body">
@@ -523,6 +471,57 @@ export default function Results() {
                 </div>
 
             </div>
+
+            <div className="row">
+                <div className="col-lg-12 mt-4 text-center">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title">
+                                <h1>Correlation Matrix</h1>
+                            </div>
+                            <p className="text-justify">
+                                Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little relationship between their movements.
+
+
+                            </p>
+                            {result && (
+                                <MatrixTable
+                                    title="Correlation Matrix"
+                                    matrix={result.correlation}
+                                    decimals={6}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-lg-12 mt-4 text-justify">
+                    <div className="card h-100 shadow-sm">
+                        <div className="card-body">
+                            <div className="card-title text-center">
+                                <h1>Covariance Matrix</h1>
+                            </div>
+                            <p className="text-justify">
+                                Covariance measures how two assets move relative to one another. A positive covariance indicates they tend to move in the same direction, while a negative covariance indicates they tend to move in opposite directions. Larger positive values suggest a stronger tendency to move together.
+                                <br /> <br /> When optimizing a portfolio, you want to lower the covariance between
+                                assets to the best of your ability. So if you have 5 tech stocks and want to diversify,
+                                you should find a sector that has low or negative covariance with tech.
+                            </p>
+                            {result && (
+                                <MatrixTable
+                                    title="Covariance Matrix"
+                                    matrix={result.covariance}
+                                    decimals={6}
+                                />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
             <div className="row justify-content-center">
                 <div className="col-md-12 mt-4 text-center">
                     <div className="card h-100 shadow-sm">
