@@ -262,7 +262,7 @@ export default function Results() {
 
                                             </div>
                                             <div className="small text-muted">
-                                                Data Info Here
+                                                Downside Risk-adjusted return
                                             </div>
                                         </div>
                                     </div>
@@ -615,182 +615,86 @@ export default function Results() {
                 </div>
             </div>
 
-            <div className="row">
-                <div className="col-md-12 mt-4 text-center">
-                    <div className="card h-100 shadow-sm">
-                        <div className="card-body d-flex flex-column align-items-center">
+            <div className="row align-items-center g-4 w-100">
 
-                            <div className="card-title">
-                                <h1>New Model Portfolio</h1>
+                <div className="col-12 col-md-5 text-center">
+                    <PortfolioScoreDial
+                        score={
+                            result.model_portfolio
+                                .modeled_portfolio_score
+                        }
+                    />
+                </div>
+
+                <div className="col-12 col-md-7">
+
+                    <h3 className="text-center mb-3">
+                        Model Portfolio Stats
+                    </h3>
+
+                    <div className="row g-2">
+
+                        <div className="col-12 col-sm-6">
+                            <div className="border rounded p-2 p-sm-3 text-center h-100">
+                                <div className="text-muted small mb-1">
+                                    Score
+                                </div>
+
+                                <div className="fs-4 fw-bold">
+                                    {result.model_portfolio
+                                        .modeled_portfolio_score
+                                        .toFixed(2)}
+                                </div>
                             </div>
-
-
-                            {result && result.model_portfolio && (
-                                <>
-                                    <div>
-                                        <p className="text-muted text-justify">
-                                            {model_portfolio.short_reasoning}
-                                        </p>
-                                    </div>
-                                    <div className="row align-items-center g-4">
-
-                                        <div className="col-12 col-md-5 text-center pe-md-5">
-                                            <PortfolioScoreDial
-                                                score={
-                                                    result.model_portfolio
-                                                        .modeled_portfolio_score
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="col-12 col-md-7 ps-md-4">
-
-                                            <h3 className="text-center mb-3">
-                                                Model Portfolio Stats
-                                            </h3>
-
-                                            <div className="row g-3">
-
-                                                <div className="col-6">
-                                                    <div className="border rounded p-3 text-center h-100">
-                                                        <div className="text-muted small mb-1">
-                                                            Score
-                                                        </div>
-
-                                                        <div className="fs-3 fw-bold">
-                                                            {result.model_portfolio
-                                                                .modeled_portfolio_score
-                                                                .toFixed(2)}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-6">
-                                                    <div className="border rounded p-3 text-center h-100">
-                                                        <div className="text-muted small mb-1">
-                                                            Expected Return
-                                                        </div>
-
-                                                        <div className="fs-3 fw-bold">
-                                                            {(
-                                                                result.model_portfolio
-                                                                    .modeled_return * 100
-                                                            ).toFixed(2)}%
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-6">
-                                                    <div className="border rounded p-3 text-center h-100">
-                                                        <div className="text-muted small mb-1">
-                                                            Sharpe Ratio
-                                                        </div>
-
-                                                        <div className="fs-3 fw-bold">
-                                                            {result.model_portfolio
-                                                                .modeled_sharpe_ratio
-                                                                .toFixed(2)}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="col-6">
-                                                    <div className="border rounded p-3 text-center h-100">
-                                                        <div className="text-muted small mb-1">
-                                                            HHI
-                                                        </div>
-
-                                                        <div className="fs-3 fw-bold">
-                                                            {result.model_portfolio
-                                                                .modeled_hhi
-                                                                .toFixed(3)}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                    {model_portfolio && (
-                                        <div className="mt-4 w-100">
-
-                                            <div className="text-center mb-3">
-                                                <h3>Proposed Changes</h3>
-                                            </div>
-
-                                            <div className="table-responsive">
-                                                <table className="table table-hover align-middle text-center">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Ticker</th>
-                                                            <th>Current</th>
-                                                            <th>Model</th>
-                                                            <th>Change</th>
-                                                        </tr>
-                                                    </thead>
-
-                                                    <tbody>
-                                                        {model_portfolio.positions.map(
-                                                            (position: any) => {
-
-                                                                const currentPosition =
-                                                                    portfolio.find(
-                                                                        (p: any) =>
-                                                                            p.ticker === position.ticker
-                                                                    );
-
-                                                                const currentAllocation =
-                                                                    currentPosition?.allocation ?? 0;
-
-                                                                const modelAllocation =
-                                                                    position.modeled_allocation ??
-                                                                    position.allocation ??
-                                                                    0;
-
-                                                                const change =
-                                                                    modelAllocation - currentAllocation;
-
-                                                                return (
-                                                                    <tr key={position.ticker}>
-                                                                        <td>
-                                                                            <strong>
-                                                                                {position.ticker}
-                                                                            </strong>
-                                                                        </td>
-
-                                                                        <td>
-                                                                            {(currentAllocation * 100).toFixed(2)}%
-                                                                        </td>
-
-                                                                        <td>
-                                                                            {(modelAllocation * 100).toFixed(2)}%
-                                                                        </td>
-
-                                                                        <td>
-                                                                            {(change * 100).toFixed(2)}%
-                                                                        </td>
-                                                                    </tr>
-                                                                );
-                                                            }
-                                                        )}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-
-                                        </div>
-                                    )}
-                                </>
-                            )}
-
-
-
                         </div>
+
+                        <div className="col-12 col-sm-6">
+                            <div className="border rounded p-2 p-sm-3 text-center h-100">
+                                <div className="text-muted small mb-1">
+                                    Expected Return
+                                </div>
+
+                                <div className="fs-4 fw-bold">
+                                    {(
+                                        result.model_portfolio
+                                            .modeled_return * 100
+                                    ).toFixed(2)}%
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-12 col-sm-6">
+                            <div className="border rounded p-2 p-sm-3 text-center h-100">
+                                <div className="text-muted small mb-1">
+                                    Sharpe Ratio
+                                </div>
+
+                                <div className="fs-4 fw-bold">
+                                    {result.model_portfolio
+                                        .modeled_sharpe_ratio
+                                        .toFixed(2)}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="col-12 col-sm-6">
+                            <div className="border rounded p-2 p-sm-3 text-center h-100">
+                                <div className="text-muted small mb-1">
+                                    HHI
+                                </div>
+
+                                <div className="fs-4 fw-bold">
+                                    {result.model_portfolio
+                                        .modeled_hhi
+                                        .toFixed(3)}
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-            </div>
 
+            </div>
 
 
             <div className="row justify-content-center">
