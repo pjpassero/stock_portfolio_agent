@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { getPortfolio } from "../services/api";
 import { SendMessage } from "../services/api";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import MatrixTable from "../components/MatrixTable";
 import PortfolioScoreDial from "../components/PortfolioScoreDial";
 import SectorPieChart from "../components/SectorMap";
@@ -22,15 +22,17 @@ export default function Results() {
     //const [model_portfolio, setModel] = useState<any>(null);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<any[]>([]);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+
         async function queryPortfolio() {
+
             if (!portfolioId) return;
+            setLoading(true);
 
             try {
                 const result = await getPortfolio(portfolioId);
-
                 console.log("Full response:");
                 console.log(result);
                 setResult(result);
@@ -43,10 +45,13 @@ export default function Results() {
                 setMessages(result.messages || []);
             } catch (err) {
                 console.error(err);
+            } finally {
+                setLoading(false);
+
             }
         }
-
         queryPortfolio();
+
     }, [portfolioId]);
 
     useEffect(() => {
@@ -57,11 +62,6 @@ export default function Results() {
         console.log(result);
     }, [portfolio]);
 
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({
-            behavior: "smooth"
-        })
-    }, [messages])
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -102,7 +102,38 @@ export default function Results() {
 
 
     return (
+
         <div className="container-fluid">
+            {loading && (
+                <div
+                    className="modal show d-block"
+                    tabIndex={-1}
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content rounded-4 border-0 shadow">
+
+                            <div className="modal-header">
+                                <h5 className="modal-title fw-bold">
+                                    Loading Your Portfolio
+                                </h5>
+                            </div>
+
+                            <div className="modal-body text-center">
+                                <div
+                                    className="spinner-border mb-3"
+                                    role="status"
+                                />
+
+                                <div className="fw-semibold">
+                                    Fin is getting everything ready...
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="row justify-content-center">
                 <div className="col-md-10 text-center">
                     <h1>{username ? `${username}'s Portfolio` : "Portfolio"}</h1>
@@ -802,7 +833,6 @@ export default function Results() {
                                         </div>
                                     </div>
                                 ))}
-                                <div ref={messagesEndRef} />
                             </div>
 
 

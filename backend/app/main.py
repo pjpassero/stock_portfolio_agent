@@ -22,7 +22,7 @@ from psycopg2.extras import RealDictCursor
 from app.agents.fin import app_fin_graph
 import json
 from fastapi import HTTPException
-
+from app.services.update_portfolio_basis import update_basis
 from fastapi.responses import StreamingResponse
 
 from pydantic import BaseModel
@@ -97,11 +97,11 @@ def ticker_details(ticker: str):
         "price": price
     }
 
-       
 
 
 @app.get("/endpoint_test/new_data_stream/{portfolioId}")
 def new_data_stream(portfolioId:str):
+    update_basis(portfolioId)
     with get_connection() as conn:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
             portfolio_data_query = """
