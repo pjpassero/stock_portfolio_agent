@@ -4,5 +4,5 @@ from langchain_core.tools import tool
 
 
 @tool
-def add_user_ticker(ticker:str, shares:float):
+def add_user_ticker(ticker:str, allocation:float):
     return "Hello World!"

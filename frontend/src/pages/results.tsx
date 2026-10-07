@@ -19,7 +19,7 @@ export default function Results() {
     const [result, setResult] = useState<any>(null);
     const [username, setUsername] = useState<any>(null);
     const [ai_summary, setSummary] = useState<any>(null);
-    const [model_portfolio, setModel] = useState<any>(null);
+    //const [model_portfolio, setModel] = useState<any>(null);
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<any[]>([]);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,7 +36,7 @@ export default function Results() {
                 setResult(result);
                 setUsername(result.username);
                 setSummary(result.fin_first_response);
-                setModel(result.model_portfolio);
+                //setModel(result.model_portfolio);
                 console.log("Portfolio Expanded:");
                 setPortfolio(result.portfolioExpanded);
                 setPortfolioValue(result.portfolio_value);
