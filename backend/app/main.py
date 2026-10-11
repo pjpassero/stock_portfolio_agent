@@ -1,31 +1,29 @@
-from fastapi import FastAPI, UploadFile, File
-from app.routers import analyze
-from fastapi.responses import HTMLResponse
-from fastapi.middleware.cors import CORSMiddleware
-from app.services.yahoo import get_company_data
-from app.models.position import Position
-from app.routers import analyze
-from app.agents.graph import app_graph
+
+import json
 import os
 import uuid
-from dotenv import load_dotenv
-from app.services.database_connector import get_connection
-from pathlib import Path
-from psycopg2.extras import Json
-from fastapi.encoders import jsonable_encoder
-from app.models.portfolioRequest import PortfolioRequest
 from copy import deepcopy
-from app.agents.reanalyze_graph import app_graph_analysis
-from app.agents.extraction_agent import extract_graph
-from app.tools.expand_position import expand_tickers
-from psycopg2.extras import RealDictCursor
-from app.agents.fin import app_fin_graph
-import json
-from fastapi import HTTPException
-from app.services.update_portfolio_basis import update_basis
-from fastapi.responses import StreamingResponse
+from pathlib import Path
 
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, StreamingResponse
+from psycopg2.extras import Json, RealDictCursor
 from pydantic import BaseModel
+
+from app.agents.extraction_agent import extract_graph
+from app.agents.fin import app_fin_graph
+from app.agents.graph import app_graph
+from app.agents.reanalyze_graph import app_graph_analysis
+from app.models.portfolioRequest import PortfolioRequest
+from app.models.position import Position
+from app.routers import analyze
+from app.services.database_connector import get_connection
+from app.services.update_portfolio_basis import update_basis
+from app.services.yahoo import get_company_data
+from app.tools.expand_position import expand_tickers
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 dotenv_path = BASE_DIR / ".env"

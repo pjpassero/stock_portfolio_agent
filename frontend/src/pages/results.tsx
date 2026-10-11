@@ -11,8 +11,16 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
+
 export default function Results() {
+
     const { portfolioId } = useParams<{ portfolioId: string }>();
+
+    const activePortfolioId =
+        window.location.pathname === "/results/demo"
+            ? "demo"
+            : portfolioId;
+
     const [expandedTicker, setExpandedTicker] = useState<string | null>(null);
     const [portfolio, setPortfolio] = useState<any[]>([]);
     const [portfolioValue, setPortfolioValue] = useState(0);
@@ -23,16 +31,19 @@ export default function Results() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [chatLoading, setChatLoading] = useState(false);
+    const [chatStatus] = useState<string[]>(["Fin is thinking"]);
 
     useEffect(() => {
 
         async function queryPortfolio() {
 
-            if (!portfolioId) return;
+            if (!activePortfolioId) return;
+
             setLoading(true);
 
             try {
-                const result = await getPortfolio(portfolioId);
+                const result = await getPortfolio(activePortfolioId);
                 console.log("Full response:");
                 console.log(result);
                 setResult(result);
@@ -50,9 +61,10 @@ export default function Results() {
 
             }
         }
+
         queryPortfolio();
 
-    }, [portfolioId]);
+    }, [activePortfolioId]);
 
     useEffect(() => {
         console.log("Portfolio state updated:");
@@ -66,36 +78,45 @@ export default function Results() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (!message.trim() || !portfolioId) {
+
+        if (!message.trim() || !activePortfolioId) {
             return;
         }
+
+        setChatLoading(true);
+
         const newMessage = message.trim();
+
 
         setMessages(prev => [
             ...prev,
             {
-                chat_id: `temp-${Date.now()}`,
+                chat_id: `temp - ${Date.now()} `,
                 role: "user",
                 content: newMessage
             }
         ]);
 
+
         setMessage("");
 
+
         try {
-            const data = await SendMessage(message, portfolioId);
+            const data = await SendMessage(newMessage, activePortfolioId);
+
             setMessages(prev => [
                 ...prev,
                 {
-                    chat_id: `temp-fin-${Date.now()}`,
+                    chat_id: `temp - fin - ${Date.now()} `,
                     role: "assistant",
                     content: data
                 }
             ]);
 
-
         } catch (error) {
             console.log(error);
+        } finally {
+            setChatLoading(false);
         }
 
     }
@@ -134,19 +155,22 @@ export default function Results() {
                     </div>
                 </div>
             )}
+
             <div className="row justify-content-center">
                 <div className="col-md-10 text-center">
-                    <h1>{username ? `${username}'s Portfolio` : "Portfolio"}</h1>
-                    <h3>$
-                        {(portfolioValue).toLocaleString(
-                            "en-US",
-                            {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            }
-                        )}</h3>
-                </div>
-            </div>
+                    <h1>{username ? `${username} 's Portfolio` : "Portfolio"}</h1>
+                    < h3 > $
+                        {
+                            (portfolioValue).toLocaleString(
+                                "en-US",
+                                {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                }
+                            )
+                        }</h3 >
+                </div >
+            </div >
             <hr />
             <div className="row">
                 {portfolio.map((stock: any) => (
@@ -254,6 +278,7 @@ export default function Results() {
                     </div>
                 ))}
             </div>
+
             <div className="row">
                 <div className="col-md-6 mt-4">
                     <div className="card h-100 shadow-sm">
@@ -283,6 +308,7 @@ export default function Results() {
                                             </div>
                                         </div>
                                     </div>
+
                                     <div className="col-6">
                                         <div className="border rounded p-3 text-center h-100">
                                             <div className="text-muted small mb-1">
@@ -290,13 +316,13 @@ export default function Results() {
                                             </div>
                                             <div className="fs-3 fw-bold">
                                                 {result.sortino_ratio.toFixed(3)}
-
                                             </div>
                                             <div className="small text-muted">
                                                 Downside Risk-adjusted return
                                             </div>
                                         </div>
                                     </div>
+
                                     <div className="col-6">
                                         <div className="border rounded p-3 text-center h-100">
                                             <div className="text-muted small mb-1">
@@ -359,6 +385,7 @@ export default function Results() {
                         </div>
                     </div>
                 </div>
+
                 <div className="col-md-6 mt-4 text-center">
                     <div className="card h-100 shadow-sm">
                         <div className="card-body d-flex flex-column align-items-center">
@@ -389,6 +416,7 @@ export default function Results() {
                     </div>
                 </div>
             </div>
+
             <div className="row">
                 <div className="col-md-12 mt-4 text-center">
                     <div className="card h-100 shadow-sm">
@@ -455,6 +483,7 @@ export default function Results() {
                     </div>
                 </div>
             </div>
+
             <div className="row g-4 mt-1">
 
                 <div className="col-md-6">
@@ -512,8 +541,6 @@ export default function Results() {
                             </div>
                             <p className="text-justify">
                                 Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little relationship between their movements.
-
-
                             </p>
                             {result && (
                                 <MatrixTable
@@ -526,6 +553,7 @@ export default function Results() {
                     </div>
                 </div>
             </div>
+
             <div className="row">
                 <div className="col-lg-12 mt-4 text-justify">
                     <div className="card h-100 shadow-sm">
@@ -550,8 +578,6 @@ export default function Results() {
                     </div>
                 </div>
             </div>
-
-
 
             <div className="row justify-content-center">
                 <div className="col-md-12 mt-4 text-center">
@@ -833,8 +859,17 @@ export default function Results() {
                                         </div>
                                     </div>
                                 ))}
-                            </div>
 
+                                {chatLoading && (
+                                    <div className="fw-bold mb-2">
+                                        <div
+                                            className="spinner-border spinner-border-sm me-2"
+                                            role="status"
+                                        />
+                                        {chatStatus}
+                                    </div>
+                                )}
+                            </div>
 
                             <form onSubmit={handleSubmit}>
                                 <div className="input-group">
@@ -859,6 +894,7 @@ export default function Results() {
                     </div>
                 </div>
             </div>
+
             <footer className="bg-white border-top text-center py-4 mt-5">
                 <div className="container">
                     <p className="mb-0">
@@ -869,6 +905,6 @@ export default function Results() {
                     </p>
                 </div>
             </footer>
-        </div>
+        </div >
     );
 }

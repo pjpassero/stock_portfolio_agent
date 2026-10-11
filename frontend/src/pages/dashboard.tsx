@@ -253,7 +253,7 @@ export default function Home() {
 
                         <button
                             className="btn btn-primary btn-lg px-5"
-                            onClick={() => navigate("/demo")}
+                            onClick={() => navigate("/results/demo")}
                         >
                             Try  FinLab
                         </button>
