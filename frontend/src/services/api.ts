@@ -150,3 +150,12 @@ export async function SendMessage(message: string, portfolioId: string) {
 
     return await response.json();
 }
+
+export async function search_ticker(query: string) {
+    console.log(query);
+    const response = await fetch(`${API_URL}/find_ticker`, {
+
+    });
+
+    return response;
+}

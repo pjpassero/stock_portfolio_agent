@@ -4,6 +4,8 @@ import type { Position } from "../types/Position";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import { useEffect, useState } from "react";
+import Header from "../components/Header";
+
 
 export default function EnterPortfolio() {
     const [portfolio, setPortfolio] = useState<Position[]>([]);
@@ -17,8 +19,12 @@ export default function EnterPortfolio() {
     const [loading, setLoading] = useState(false);
     const [showStateAnalysis, setStateAnalysis] = useState(false);
     const [analysisSteps, setAnalysisSteps] = useState<string[]>(["Loading Portfolio Data"]);
+    const [activeTab, setActiveTab] = useState<"manual" | "upload">("manual");
+    const [search_ticker, setSearchTicker] = useState("");
     const [user_uuid, setID] = useState("");
     const navigate = useNavigate();
+
+
     const analysisStepNames: Record<string, string> = {
         expand_details: "Gathering Security Data",
         classify_assets: "Classifying Portfolio Assets",
@@ -136,6 +142,12 @@ export default function EnterPortfolio() {
         }
     }
 
+    async function SearchTicker() {
+        if (!search_ticker) {
+            setTickerError("No ticker entered!");
+        }
+    }
+
     useEffect(() => {
         async function get_user_first_name() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -165,104 +177,170 @@ export default function EnterPortfolio() {
 
     return (
         <div className="container-fluid">
+            <div className="container py-4">
+                <Header />
 
-            <div className="row justify-content-center">
-                <div className="col-lg-10 col-xl-11">
 
-                    <div className="card shadow-sm border-0 rounded-4 mb-4">
-                        <div className="card-body p-4 p-md-5">
+                <div className="row justify-content-center">
+                    <div className="col-lg-10 col-xl-11">
 
-                            <div className="text-center mb-4">
-                                <h2 className="fw-bold mb-2">
-                                    Build Your Portfolio
-                                </h2>
-
-                                <p className="text-muted mb-0">
-                                    Enter a position below to add it to your portfolio.
-                                </p>
-                            </div>
-                            {tickerError && (
-                                <div className="text-danger mb-3">
-                                    {tickerError}
-                                </div>
-                            )}
-                            <form>
-                                <div className="row g-3">
-
-                                    <div className="col-md-4">
-                                        <label
-                                            htmlFor="ticker"
-                                            className="form-label fw-semibold"
+                        <div className="card shadow-sm border-0 rounded-4 mb-4 mt-4">
+                            <div className="card-body p-4 p-md-5">
+                                <ul className="nav nav-tabs nav-fill w-100 mb-4">
+                                    <li className="nav-item">
+                                        <button
+                                            type="button"
+                                            className={`nav-link w-100 ${activeTab === "manual" ? "active" : ""}`}
+                                            onClick={() => setActiveTab("manual")}
                                         >
-                                            Ticker
-                                        </label>
+                                            Manual Entry
+                                        </button>
+                                    </li>
 
-                                        <input
-                                            id="ticker"
-                                            type="text"
-                                            className="form-control"
-                                            value={ticker}
-                                            onChange={(e) => setTicker(e.target.value)}
-                                            placeholder="e.g. AAPL"
-                                        />
-                                    </div>
-
-                                    <div className="col-md-4">
-                                        <label
-                                            htmlFor="shares"
-                                            className="form-label fw-semibold"
+                                    <li className="nav-item">
+                                        <button
+                                            type="button"
+                                            className={`nav-link w-100 ${activeTab === "upload" ? "active" : ""}`}
+                                            onClick={() => setActiveTab("upload")}
                                         >
-                                            Shares
-                                        </label>
+                                            Upload File
+                                        </button>
+                                    </li>
+                                </ul>
 
-                                        <input
-                                            id="shares"
-                                            type="number"
-                                            className="form-control"
-                                            value={shareCount}
-                                            onChange={(e) => setShareCount(e.target.value)}
-                                            placeholder="e.g. 100"
-                                        />
-                                    </div>
+                                {activeTab === "manual" && (
+                                    <>
+                                        <div className="text-center mb-4">
+                                            <h2 className="fw-bold mb-2 mt-4">
+                                                Build Your Portfolio
+                                            </h2>
 
-                                    <div className="col-md-4">
-                                        <label
-                                            htmlFor="costBasis"
-                                            className="form-label fw-semibold"
-                                        >
-                                            Purchase Price
-                                        </label>
-
-                                        <input
-                                            id="costBasis"
-                                            type="number"
-                                            className="form-control"
-                                            value={costBasis}
-                                            onChange={(e) => setCostBasis(e.target.value)}
-                                            placeholder="e.g. 150.00"
-                                        />
-                                    </div>
-
-                                    <div className="col-12">
-                                        <div className="d-grid">
-                                            <button
-                                                type="button"
-                                                onClick={addToPortfolio}
-                                                className="btn btn-outline-primary"
-                                            >
-                                                Add Position
-                                            </button>
-                                        </div>
-                                    </div>
-
-
-                                    <div className="col-12">
-                                        <div className="mt-3">
-
-                                            <p className="text-muted text-center mb-2">
-                                                Or upload your portfolio file and let Fin
-                                                take care of it!
+                                            <p className="text-muted mb-0">
+                                                Enter a position below to add it to your portfolio. If you don't know
+                                                the ticker, search for the company.
                                             </p>
+                                        </div>
+                                        {tickerError && (
+                                            <div className="text-danger mb-3">
+                                                {tickerError}
+                                            </div>
+                                        )}
+                                        <form>
+                                            <div className="row g-3">
+                                                <div className="col-md-12">
+                                                    <label
+                                                        htmlFor="ticker"
+                                                        className="form-label fw-semibold"
+                                                    >
+                                                        Search for a Company
+                                                    </label>
+
+                                                    <div className="input-group">
+                                                        <input
+                                                            id="ticker"
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={search_ticker}
+                                                            onChange={(e) => setSearchTicker(e.target.value)}
+                                                            placeholder="e.g. AAPL"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={SearchTicker}
+                                                            className="btn btn-outline-primary"
+                                                        >
+                                                            Search
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="col-md-4">
+
+                                                    <label
+                                                        htmlFor="ticker"
+                                                        className="form-label fw-semibold"
+                                                    >
+                                                        Ticker
+                                                    </label>
+
+                                                    <input
+                                                        id="ticker"
+                                                        type="text"
+                                                        className="form-control"
+                                                        value={ticker}
+                                                        onChange={(e) => setTicker(e.target.value)}
+                                                        placeholder="e.g. AAPL"
+                                                    />
+                                                </div>
+
+                                                <div className="col-md-4">
+                                                    <label
+                                                        htmlFor="shares"
+                                                        className="form-label fw-semibold"
+                                                    >
+                                                        Shares
+                                                    </label>
+
+                                                    <input
+                                                        id="shares"
+                                                        type="number"
+                                                        className="form-control"
+                                                        value={shareCount}
+                                                        onChange={(e) => setShareCount(e.target.value)}
+                                                        placeholder="e.g. 100"
+                                                    />
+                                                </div>
+
+                                                <div className="col-md-4">
+                                                    <label
+                                                        htmlFor="costBasis"
+                                                        className="form-label fw-semibold"
+                                                    >
+                                                        Purchase Price
+                                                    </label>
+
+                                                    <input
+                                                        id="costBasis"
+                                                        type="number"
+                                                        className="form-control"
+                                                        value={costBasis}
+                                                        onChange={(e) => setCostBasis(e.target.value)}
+                                                        placeholder="e.g. 150.00"
+                                                    />
+                                                </div>
+
+                                                <div className="col-12">
+                                                    <div className="d-grid">
+                                                        <button
+                                                            type="button"
+                                                            onClick={addToPortfolio}
+                                                            className="btn btn-outline-primary"
+                                                        >
+                                                            Add Position
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </form>
+
+
+                                    </>
+                                )}
+
+                                {activeTab === "upload" && (
+
+
+                                    <div className="col-12">
+                                        <div className="text-center mb-4">
+                                            <h2 className="fw-bold mb-2 mt-4">
+                                                Build Your Portfolio
+                                            </h2>
+
+                                            <p className="text-muted mb-0">
+                                                Upload a CSV file of your portfolio.
+                                            </p>
+                                        </div>
+                                        <div className="mt-3">
 
                                             <div className="d-grid">
                                                 <label
@@ -314,76 +392,74 @@ export default function EnterPortfolio() {
                                         </div>
                                     </div>
 
-                                </div>
-                            </form>
-
-                        </div>
-                    </div>
-
-
-                    <div className="card shadow-sm border-0 rounded-4">
-                        <div className="card-body p-4 p-md-5">
-
-                            <div className="text-center mb-4">
-                                <h1 className="fw-bold mb-2">
-                                    {username}'s Portfolio
-                                </h1>
-
-                                <p className="text-muted mb-0">
-                                    Review your positions before beginning the portfolio analysis.
-                                </p>
+                                )}
                             </div>
+                        </div>
 
 
-                            <div className="table-responsive mb-4">
-                                <table className="table table-hover align-middle">
+                        <div className="card shadow-sm border-0 rounded-4">
+                            <div className="card-body p-4 p-md-5">
 
-                                    <thead className="table-light">
-                                        <tr>
-                                            <th>Ticker</th>
-                                            <th>Shares</th>
-                                            <th>Total Cost Basis</th>
-                                            <th>Current Basis</th>
-                                            <th>Current Share Price</th>
+                                <div className="text-center mb-4">
+                                    <h1 className="fw-bold mb-2">
+                                        {username}'s Portfolio
+                                    </h1>
 
-                                        </tr>
-                                    </thead>
+                                    <p className="text-muted mb-0">
+                                        Review your positions before beginning the portfolio analysis.
+                                    </p>
+                                </div>
 
-                                    <tbody>
-                                        {portfolio.map((position) => (
-                                            <tr key={position.ticker}>
 
-                                                <td>
-                                                    <span className="fw-semibold">
-                                                        {position.ticker}
-                                                    </span>
-                                                </td>
+                                <div className="table-responsive mb-4">
+                                    <table className="table table-hover align-middle">
 
-                                                <td>
-                                                    {position.shares}
-                                                </td>
-
-                                                <td>
-                                                    ${(Number(position.costBasis) * Number(position.shares)).toFixed(2)}                                                </td>
-
-                                                <td>
-                                                    ${(Number(position.currentBasis) * Number(position.shares)).toFixed(2)}
-                                                </td>
-                                                <td>
-                                                    ${Number(position.currentBasis).toFixed(2)}
-                                                </td>
+                                        <thead className="table-light">
+                                            <tr>
+                                                <th>Ticker</th>
+                                                <th>Shares</th>
+                                                <th>Total Cost Basis</th>
+                                                <th>Current Basis</th>
+                                                <th>Current Share Price</th>
 
                                             </tr>
-                                        ))}
-                                    </tbody>
+                                        </thead>
 
-                                </table>
-                            </div>
+                                        <tbody>
+                                            {portfolio.map((position) => (
+                                                <tr key={position.ticker}>
+
+                                                    <td>
+                                                        <span className="fw-semibold">
+                                                            {position.ticker}
+                                                        </span>
+                                                    </td>
+
+                                                    <td>
+                                                        {position.shares}
+                                                    </td>
+
+                                                    <td>
+                                                        ${(Number(position.costBasis) * Number(position.shares)).toFixed(2)}                                                </td>
+
+                                                    <td>
+                                                        ${(Number(position.currentBasis) * Number(position.shares)).toFixed(2)}
+                                                    </td>
+                                                    <td>
+                                                        ${Number(position.currentBasis).toFixed(2)}
+                                                    </td>
+
+                                                </tr>
+                                            ))}
+                                        </tbody>
+
+                                    </table>
+                                </div>
 
 
-                            <hr className="my-4" />
+                                <hr className="my-4" />
 
-                            {/* Remove
+                                {/* Remove
                                 <div className="mb-4">
                                     <label
                                         htmlFor="username"
@@ -402,146 +478,149 @@ export default function EnterPortfolio() {
                                     />
                                 </div>
                                 */
-                            }
+                                }
 
-                            <div className="mb-4">
+                                <div className="mb-4">
 
-                                <label className="form-label fw-semibold">
-                                    Investing Experience
-                                </label>
+                                    <label className="form-label fw-semibold">
+                                        Investing Experience
+                                    </label>
 
-                                <p className="text-muted small">
-                                    Select the level that best describes your investing
-                                    knowledge. This will help us curate the best explanations
-                                    for you.
-                                </p>
+                                    <p className="text-muted small">
+                                        Select the level that best describes your investing
+                                        knowledge. This will help us curate the best explanations
+                                        for you.
+                                    </p>
 
-                                <div className="d-flex flex-column flex-md-row gap-4">
+                                    <div className="d-flex flex-column flex-md-row gap-4">
 
-                                    <div className="form-check">
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="experience"
-                                            id="beginner"
-                                            value="beginner"
-                                            checked={experience === "beginner"}
-                                            onChange={(e) => setExperience(e.target.value)}
-                                        />
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="experience"
+                                                id="beginner"
+                                                value="beginner"
+                                                checked={experience === "beginner"}
+                                                onChange={(e) => setExperience(e.target.value)}
+                                            />
 
-                                        <label
-                                            className="form-check-label"
-                                            htmlFor="beginner"
-                                        >
-                                            Beginner
-                                        </label>
+                                            <label
+                                                className="form-check-label"
+                                                htmlFor="beginner"
+                                            >
+                                                Beginner
+                                            </label>
+                                        </div>
+
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="experience"
+                                                id="intermediate"
+                                                value="intermediate"
+                                                checked={experience === "intermediate"}
+                                                onChange={(e) => setExperience(e.target.value)}
+                                            />
+
+                                            <label
+                                                className="form-check-label"
+                                                htmlFor="intermediate"
+                                            >
+                                                Intermediate
+                                            </label>
+                                        </div>
+
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="experience"
+                                                id="advanced"
+                                                value="advanced"
+                                                checked={experience === "advanced"}
+                                                onChange={(e) => setExperience(e.target.value)}
+                                            />
+
+                                            <label
+                                                className="form-check-label"
+                                                htmlFor="advanced"
+                                            >
+                                                Advanced
+                                            </label>
+                                        </div>
+
                                     </div>
-
-                                    <div className="form-check">
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="experience"
-                                            id="intermediate"
-                                            value="intermediate"
-                                            checked={experience === "intermediate"}
-                                            onChange={(e) => setExperience(e.target.value)}
-                                        />
-
-                                        <label
-                                            className="form-check-label"
-                                            htmlFor="intermediate"
-                                        >
-                                            Intermediate
-                                        </label>
-                                    </div>
-
-                                    <div className="form-check">
-                                        <input
-                                            className="form-check-input"
-                                            type="radio"
-                                            name="experience"
-                                            id="advanced"
-                                            value="advanced"
-                                            checked={experience === "advanced"}
-                                            onChange={(e) => setExperience(e.target.value)}
-                                        />
-
-                                        <label
-                                            className="form-check-label"
-                                            htmlFor="advanced"
-                                        >
-                                            Advanced
-                                        </label>
-                                    </div>
-
                                 </div>
+
+
+                                <div className="d-grid">
+                                    <button
+                                        type="button"
+                                        onClick={AnalyzePortfolio}
+                                        className="btn btn-primary btn-lg"
+                                    >
+                                        Analyze Portfolio
+                                    </button>
+                                </div>
+
                             </div>
+                        </div>
 
+                    </div>
+                </div>
+                {showStateAnalysis && (
+                    <div
+                        className="modal show d-block"
+                        tabIndex={-1}
+                        style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+                    >
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content rounded-4 border-0 shadow">
 
-                            <div className="d-grid">
-                                <button
-                                    type="button"
-                                    onClick={AnalyzePortfolio}
-                                    className="btn btn-primary btn-lg"
-                                >
-                                    Analyze Portfolio
-                                </button>
+                                <div className="modal-header">
+                                    <h5 className="modal-title fw-bold">
+                                        Analyzing Your Portfolio
+                                    </h5>
+                                </div>
+
+                                <div className="modal-body">
+                                    <div className="mb-3">
+                                        <div
+                                            className="spinner-border spinner-border-sm me-2"
+                                            role="status"
+                                        />
+                                        <span className="fw-semibold">
+                                            Fin is working...
+                                        </span>
+                                    </div>
+
+                                    {analysisSteps.map((step, index) => (
+                                        <div key={index} className="mb-2">
+                                            ✓ {step}
+                                        </div>
+                                    ))}
+                                </div>
+
                             </div>
-
                         </div>
                     </div>
+                )}
 
-                </div>
+                <footer className="bg-white border-top text-center py-4 mt-5">
+                    <div className="container">
+                        <p className="mb-0">
+                            © {new Date().getFullYear()} FinLab Portfolio analytics provided for educational purposes only.
+                            FinLab is not a financial advisory tool, and we are not responsible for investment
+                            decisions made using this platform. Please consult a financial professional before
+                            making investment decisons. AI-generated content may contain inaccuracies.
+                        </p>
+                    </div>
+                </footer>
+
             </div>
-            {showStateAnalysis && (
-                <div
-                    className="modal show d-block"
-                    tabIndex={-1}
-                    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-                >
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content rounded-4 border-0 shadow">
 
-                            <div className="modal-header">
-                                <h5 className="modal-title fw-bold">
-                                    Analyzing Your Portfolio
-                                </h5>
-                            </div>
-
-                            <div className="modal-body">
-                                <div className="mb-3">
-                                    <div
-                                        className="spinner-border spinner-border-sm me-2"
-                                        role="status"
-                                    />
-                                    <span className="fw-semibold">
-                                        Fin is working...
-                                    </span>
-                                </div>
-
-                                {analysisSteps.map((step, index) => (
-                                    <div key={index} className="mb-2">
-                                        ✓ {step}
-                                    </div>
-                                ))}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <footer className="bg-white border-top text-center py-4 mt-5">
-                <div className="container">
-                    <p className="mb-0">
-                        © {new Date().getFullYear()} FinLab Portfolio analytics provided for educational purposes only.
-                        FinLab is not a financial advisory tool, and we are not responsible for investment
-                        decisions made using this platform. Please consult a financial professional before
-                        making investment decisons. AI-generated content may contain inaccuracies.
-                    </p>
-                </div>
-            </footer>
         </div>
     );
 }

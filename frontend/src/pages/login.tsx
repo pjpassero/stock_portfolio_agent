@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "../services/supabase";
-
+import Header from "../components/Header";
 
 
 
@@ -38,57 +38,66 @@ export default function Login() {
         navigate("/");
     }
     return (
-        <div className="container-fluid min-vh-100 d-flex justify-content-center align-items-center">
-            <div className="row justify-content-center w-100">
+        <div className="container-fluid min-vh-100 d-flex flex-column">
 
-                <div className="col-12 col-md-6 text-center">
-                    <div className="card">
-                        <div className="card-body">
-                            <div className="card-title mb-3">
-                                <h2>Login to FinLab</h2>
-                            </div>
+            <div className="container pt-1  ">
+                <Header />
+            </div>
 
-                            <div className="w-75 mx-auto">
-                                <form onSubmit={ProccessLogin}>
-                                    <div className="mb-3">
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            placeholder="Email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                        />
-                                    </div>
+            <div className="container flex-grow-1 d-flex justify-content-center align-items-center">
+                <div className="row justify-content-center w-100">
 
-                                    <div className="mb-3">
-                                        <input
-                                            className="form-control"
-                                            type="password"
-                                            placeholder="Password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                        />
-                                    </div>
-                                    {error && (
-                                        <div className="alert alert-danger p-2">
-                                            {error}
+                    <div className="col-12 col-md-6 text-center">
+                        <div className="card">
+                            <div className="card-body">
+                                <div className="card-title mb-3">
+                                    <h2>Login to FinLab</h2>
+                                </div>
+
+                                <div className="w-75 mx-auto">
+                                    <form onSubmit={ProccessLogin}>
+                                        <div className="mb-3">
+                                            <input
+                                                className="form-control"
+                                                type="text"
+                                                placeholder="Email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                            />
                                         </div>
-                                    )}
-                                    <div className="mb-3">
-                                        <button
-                                            type="submit"
-                                            className="btn btn-lg btn-dark w-100"
-                                        >
-                                            Login
-                                        </button>
-                                    </div>
 
-                                    <div className="mb-3">
-                                        <a href="/register">
-                                            Don't have an account? Register Here for Free!
-                                        </a>
-                                    </div>
-                                </form>
+                                        <div className="mb-3">
+                                            <input
+                                                className="form-control"
+                                                type="password"
+                                                placeholder="Password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                            />
+                                        </div>
+
+                                        {error && (
+                                            <div className="alert alert-danger p-2">
+                                                {error}
+                                            </div>
+                                        )}
+
+                                        <div className="mb-3">
+                                            <button
+                                                type="submit"
+                                                className="btn btn-lg btn-dark w-100"
+                                            >
+                                                Login
+                                            </button>
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <a href="/register">
+                                                Don't have an account? Register Here for Free!
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
