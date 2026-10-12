@@ -106,6 +106,10 @@ def new_data_stream(portfolioId:str):
                 SELECT portfolio_value, portfolio_beta, volatility, expected_return,sharpe_ratio,username, interpretation_level,hhi,
                 portfolio_score, portfolio_return, sortino_ratio FROM portfolio WHERE id=%s
             """
+            user_data = """
+                SELECT first_name, last_name FROM public.user WHERE portfolio_id=%s
+            """
+
             holdings_data_query = """
                 SELECT * FROM portfolio_holding WHERE portfolio_id=%s
                 """
@@ -188,6 +192,12 @@ def new_data_stream(portfolioId:str):
             chat_messages = cur.execute(fin_messages_query,(portfolioId,))
             message_result = cur.fetchall()
             result["messages"] = message_result
+
+            cur.execute(user_data, (portfolioId,))
+            user_data = cur.fetchone()
+            result["first_name"] = user_data["first_name"]
+            result["last_name"] = user_data["last_name"]
+
         return dict(result)
 
 @app.post("/portfolio/upload")
@@ -212,6 +222,7 @@ class ChatRequest(BaseModel):
     message:str
     portfolioId:str
 
+
 @app.post("/chat")
 def chat(request:ChatRequest):
     print("Chat gotten! Graph started")
@@ -221,6 +232,7 @@ def chat(request:ChatRequest):
     })
     print(result)
     return result["newest_response"]
+
 
    
 

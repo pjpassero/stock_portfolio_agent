@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "../services/supabase";
-
-
+import Header from "../components/Header";
 
 export default function Register() {
 
@@ -18,14 +17,15 @@ export default function Register() {
 
         if (!email || !password || !firstname || !lastname) {
             setError("Please make sure all fields are complete!");
+            return;
         }
 
+        setError("");
 
         const { data, error } = await supabase.auth.signUp({
             email: email,
             password: password
         });
-
 
         if (error) {
             console.error("Registration failed");
@@ -37,13 +37,14 @@ export default function Register() {
             return;
         }
 
-
         if (!data.user) {
             setError("Unable to create user!");
             return;
         }
-        console.log("User created: ", data.user)
+
+        console.log("User created: ", data.user);
         console.log(data);
+
         const { error: userError } = await supabase
             .from("user")
             .insert({
@@ -55,101 +56,104 @@ export default function Register() {
 
         if (userError) {
             console.error("User table insert failed:", userError);
+            setError("Account created, but unable to save user profile.");
             return;
         }
 
-        console.log("Fintel user created");
+        console.log("FinLab user created");
 
         navigate("/");
-
     }
 
-
-
     return (
-        <div className="container-fluid min-vh-100 d-flex justify-content-center align-items-center">
-            <div className="row justify-content-center w-100">
+        <div className="container-fluid min-vh-100 d-flex flex-column">
 
-                <div className="col-12 col-md-6 text-center">
-                    <div className="card">
-                        <div className="card-body">
-                            <div className="card-title mb-3">
-                                <h2>Register for FinLab</h2>
-                            </div>
+            <div className="container pt-2">
+                <Header />
+            </div>
 
-                            <div className="w-75 mx-auto">
-                                <form onSubmit={ProcessRegistration}>
+            <div className="container flex-grow-1 d-flex justify-content-center align-items-center">
+                <div className="row justify-content-center w-100">
 
-                                    <div className="mb-3">
-                                        <input
-                                            className="form-control"
-                                            type="email"
-                                            placeholder="Email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                        />
-                                    </div>
+                    <div className="col-12 col-md-6 text-center">
+                        <div className="card">
+                            <div className="card-body">
+                                <div className="card-title mb-3">
+                                    <h2>Register for FinLab</h2>
+                                </div>
 
-                                    <div className="mb-3">
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            placeholder="First Name"
-                                            value={firstname}
-                                            onChange={(e) => setFirstName(e.target.value)}
-                                        />
-                                    </div>
+                                <div className="w-75 mx-auto">
+                                    <form onSubmit={ProcessRegistration}>
 
-                                    <div className="mb-3">
-                                        <input
-                                            className="form-control"
-                                            type="text"
-                                            placeholder="Last Name"
-                                            value={lastname}
-                                            onChange={(e) => setLastName(e.target.value)}
-                                        />
-                                    </div>
-
-                                    <div className="mb-3">
-                                        <input
-                                            className="form-control"
-                                            type="password"
-                                            placeholder="Password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                        />
-                                    </div>
-                                    {form_error && (
-                                        <div className="alert alert-danger p-2" role="alert">
-                                            {form_error}
+                                        <div className="mb-3">
+                                            <input
+                                                className="form-control"
+                                                type="email"
+                                                placeholder="Email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                            />
                                         </div>
-                                    )}
-                                    <div className="mb-3">
-                                        <button
-                                            type="submit"
-                                            className="btn btn-lg btn-dark w-100"
-                                        >
-                                            Register
-                                        </button>
-                                    </div>
 
-                                    <div className="mb-3">
-                                        <a href="/login">
-                                            Have an Account? Login Here
-                                        </a>
-                                    </div>
+                                        <div className="mb-3">
+                                            <input
+                                                className="form-control"
+                                                type="text"
+                                                placeholder="First Name"
+                                                value={firstname}
+                                                onChange={(e) => setFirstName(e.target.value)}
+                                            />
+                                        </div>
 
-                                </form>
+                                        <div className="mb-3">
+                                            <input
+                                                className="form-control"
+                                                type="text"
+                                                placeholder="Last Name"
+                                                value={lastname}
+                                                onChange={(e) => setLastName(e.target.value)}
+                                            />
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <input
+                                                className="form-control"
+                                                type="password"
+                                                placeholder="Password"
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                            />
+                                        </div>
+
+                                        {form_error && (
+                                            <div className="alert alert-danger p-2" role="alert">
+                                                {form_error}
+                                            </div>
+                                        )}
+
+                                        <div className="mb-3">
+                                            <button
+                                                type="submit"
+                                                className="btn btn-lg btn-dark w-100"
+                                            >
+                                                Register
+                                            </button>
+                                        </div>
+
+                                        <div className="mb-3">
+                                            <a href="/login">
+                                                Have an Account? Login Here
+                                            </a>
+                                        </div>
+
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
-    )
-
-
-
-
+    );
 }
