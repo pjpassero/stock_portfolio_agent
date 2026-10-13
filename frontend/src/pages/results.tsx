@@ -537,22 +537,29 @@ export default function Results() {
                 </div>
 
                 <div className="row">
-                    <div className="col-lg-12 mt-4 text-center">
+                    <div className="col-lg-12 mt-4">
                         <div className="card h-100 shadow-sm">
                             <div className="card-body">
-                                <div className="card-title">
+                                <div className="card-title text-center">
                                     <h1>Correlation Matrix</h1>
                                 </div>
                                 <p className="text-justify">
-                                    Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little relationship between their movements.
+                                    Correlation measures how closely two assets move together. A correlation close to +1 indicates they tend to move in the same direction, a correlation close to -1 indicates they tend to move in opposite directions, and a correlation near 0 indicates little linear relationship between their movements.
+                                    <br /> <br />
+                                    When looking at a portfolio, we generally want lower correlations between assets to help reduce overall volatility through diversification. If two assets have a negative correlation, that suggests that when asset A decreases in value, asset B may increase in value, helping offset losses and reduce overall portfolio volatility. Assets with correlations near zero can also provide diversification benefits because their movements are less closely related. However, these relationships are not guaranteed to hold, especially during periods of market stress.
+                                    <br /> <br />
+                                    Below you will find your correlation matrix. To learn more about correlation, ask Fin!
                                 </p>
-                                {result && (
-                                    <MatrixTable
-                                        title="Correlation Matrix"
-                                        matrix={result.correlation}
-                                        decimals={6}
-                                    />
-                                )}
+                                <div className="text-center">
+                                    {result && (
+                                        <MatrixTable
+                                            title="Correlation Matrix"
+                                            matrix={result.correlation}
+                                            decimals={6}
+                                        />
+                                    )}
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -566,18 +573,23 @@ export default function Results() {
                                     <h1>Covariance Matrix</h1>
                                 </div>
                                 <p className="text-justify">
-                                    Covariance measures how two assets move relative to one another. A positive covariance indicates they tend to move in the same direction, while a negative covariance indicates they tend to move in opposite directions. Larger positive values suggest a stronger tendency to move together.
-                                    <br /> <br /> When optimizing a portfolio, you want to lower the covariance between
-                                    assets to the best of your ability. So if you have 5 tech stocks and want to diversify,
-                                    you should find a sector that has low or negative covariance with tech.
+                                    Covariance measures how two assets move relative to one another. A positive covariance indicates they tend to move in the same direction, while a negative covariance indicates they tend to move in opposite directions. The magnitude of covariance depends on the volatility of the assets, so larger values do not necessarily indicate a stronger relationship.
+                                    <br /> <br />
+
+                                    When optimizing a portfolio, you generally want to reduce overall portfolio risk by diversifying across assets with lower covariance. For example, if you own five technology stocks and want to diversify, you might consider investing in another sector whose returns have low or negative covariance with your existing holdings. This can help reduce overall portfolio volatility, although diversification does not eliminate risk.
+                                    <br /> <br />
+
+                                    Below you will find your covariance matrix. To learn more about covariance, ask Fin!
                                 </p>
-                                {result && (
-                                    <MatrixTable
-                                        title="Covariance Matrix"
-                                        matrix={result.covariance}
-                                        decimals={6}
-                                    />
-                                )}
+                                <div className="text-center">
+                                    {result && (
+                                        <MatrixTable
+                                            title="Covariance Matrix"
+                                            matrix={result.covariance}
+                                            decimals={6}
+                                        />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
