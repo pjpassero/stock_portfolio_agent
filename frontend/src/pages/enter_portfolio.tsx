@@ -20,7 +20,7 @@ export default function EnterPortfolio() {
     const [showStateAnalysis, setStateAnalysis] = useState(false);
     const [analysisSteps, setAnalysisSteps] = useState<string[]>(["Loading Portfolio Data"]);
     const [activeTab, setActiveTab] = useState<"manual" | "upload">("manual");
-    const [search_ticker, setSearchTicker] = useState("");
+    //const [search_ticker, setSearchTicker] = useState("");
     const [user_uuid, setID] = useState("");
     const navigate = useNavigate();
 
@@ -141,13 +141,13 @@ export default function EnterPortfolio() {
             );
         }
     }
-
+    /*
     async function SearchTicker() {
         if (!search_ticker) {
             setTickerError("No ticker entered!");
         }
     }
-
+    */
     useEffect(() => {
         async function get_user_first_name() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -228,6 +228,10 @@ export default function EnterPortfolio() {
                                         <form>
                                             <div className="row g-3">
                                                 <div className="col-md-12">
+                                                    {/*
+
+
+                                                    
                                                     <label
                                                         htmlFor="ticker"
                                                         className="form-label fw-semibold"
@@ -252,6 +256,8 @@ export default function EnterPortfolio() {
                                                             Search
                                                         </button>
                                                     </div>
+                                            
+                                                    */}
                                                 </div>
                                                 <div className="col-md-4">
 
