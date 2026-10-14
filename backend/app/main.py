@@ -197,8 +197,13 @@ def new_data_stream(portfolioId:str):
             user_data = cur.fetchone()
             result["first_name"] = user_data["first_name"]
             result["last_name"] = user_data["last_name"]
-
-        return dict(result)
+            if user_data:
+                result["first_name"] = user_data["first_name"]
+                result["last_name"] = user_data["last_name"]
+            else:
+                result["first_name"] = "Demo"
+                result["last_name"] = "Demo"
+            return dict(result)
 
 @app.post("/portfolio/upload")
 async def upload_file(file: UploadFile = File(...)): 
