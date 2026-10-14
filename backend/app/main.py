@@ -195,8 +195,7 @@ def new_data_stream(portfolioId:str):
 
             cur.execute(user_data, (portfolioId,))
             user_data = cur.fetchone()
-            result["first_name"] = user_data["first_name"]
-            result["last_name"] = user_data["last_name"]
+      
             if user_data:
                 result["first_name"] = user_data["first_name"]
                 result["last_name"] = user_data["last_name"]
