@@ -1,11 +1,12 @@
 import { analyze_portfolio, getTicker } from "../services/api";
 import { uploadPortfolioFile } from "../services/api";
+import { search_ticker } from "../services/api";
 import type { Position } from "../types/Position";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabase";
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
-
+import type { TickerResult } from "../types/TickerResult"
 
 export default function EnterPortfolio() {
     const [portfolio, setPortfolio] = useState<Position[]>([]);
@@ -20,8 +21,10 @@ export default function EnterPortfolio() {
     const [showStateAnalysis, setStateAnalysis] = useState(false);
     const [analysisSteps, setAnalysisSteps] = useState<string[]>(["Loading Portfolio Data"]);
     const [activeTab, setActiveTab] = useState<"manual" | "upload">("manual");
-    //const [search_ticker, setSearchTicker] = useState("");
+    const [query, setSearchTicker] = useState("");
     const [user_uuid, setID] = useState("");
+    const [tickerResults, setTickerResults] = useState<TickerResult[]>([]);
+    const [, setSelectedTicker] = useState<string>("");
     const navigate = useNavigate();
 
 
@@ -69,6 +72,7 @@ export default function EnterPortfolio() {
         setTicker("");
         setShareCount("");
         setCostBasis("");
+        setSearchTicker("");
     }
 
 
@@ -141,13 +145,19 @@ export default function EnterPortfolio() {
             );
         }
     }
-    /*
+
     async function SearchTicker() {
         if (!search_ticker) {
             setTickerError("No ticker entered!");
         }
+        if (tickerResults.length !== 0) {
+            setTickerResults([]);
+        }
+        const response = await search_ticker(query.trim());
+        setTickerResults(response);
+        console.log(response);
     }
-    */
+
     useEffect(() => {
         async function get_user_first_name() {
             const { data: { session } } = await supabase.auth.getSession();
@@ -228,10 +238,9 @@ export default function EnterPortfolio() {
                                         <form>
                                             <div className="row g-3">
                                                 <div className="col-md-12">
-                                                    {/*
 
 
-                                                    
+
                                                     <label
                                                         htmlFor="ticker"
                                                         className="form-label fw-semibold"
@@ -244,7 +253,7 @@ export default function EnterPortfolio() {
                                                             id="ticker"
                                                             type="text"
                                                             className="form-control"
-                                                            value={search_ticker}
+                                                            value={query}
                                                             onChange={(e) => setSearchTicker(e.target.value)}
                                                             placeholder="e.g. AAPL"
                                                         />
@@ -256,9 +265,34 @@ export default function EnterPortfolio() {
                                                             Search
                                                         </button>
                                                     </div>
-                                            
-                                                    */}
+
+                                                    <div className="col-md-4">
+                                                        {tickerResults.length > 0 && (
+                                                            <div className="list-group mt-2">
+                                                                {tickerResults.map((ticker) => (
+                                                                    <button
+                                                                        key={ticker.symbol}
+                                                                        type="button"
+                                                                        className="list-group-item list-group-item-action"
+                                                                        onClick={() => {
+                                                                            setSelectedTicker(ticker.symbol);
+                                                                            setSearchTicker(ticker.symbol);
+                                                                            setTickerResults([]);
+                                                                            setTicker(ticker.symbol)
+                                                                        }}
+                                                                    >
+                                                                        <strong>{ticker.symbol}</strong>
+                                                                        <span className="ms-2">{ticker.name}</span>
+                                                                        <small className="text-muted ms-2">
+                                                                            {ticker.exchange}
+                                                                        </small>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
+
                                                 <div className="col-md-4">
 
                                                     <label
@@ -559,7 +593,79 @@ export default function EnterPortfolio() {
 
                                     </div>
                                 </div>
+                                { /*<div className="mb-4">
 
+                                    <label className="form-label fw-semibold">
+                                        Questionnaire
+                                    </label>
+
+                                    <p className="text-muted small">
+                                        Select the level that best describes your investing
+                                        knowledge. This will help us curate the best explanations
+                                        for you.
+                                    </p>
+
+                                    <div className="d-flex flex-column flex-md-row gap-4">
+
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="experience"
+                                                id="beginner"
+                                                value="beginner"
+                                                checked={experience === "beginner"}
+                                                onChange={(e) => setExperience(e.target.value)}
+                                            />
+
+                                            <label
+                                                className="form-check-label"
+                                                htmlFor="beginner"
+                                            >
+                                                Beginner
+                                            </label>
+                                        </div>
+
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="experience"
+                                                id="intermediate"
+                                                value="intermediate"
+                                                checked={experience === "intermediate"}
+                                                onChange={(e) => setExperience(e.target.value)}
+                                            />
+
+                                            <label
+                                                className="form-check-label"
+                                                htmlFor="intermediate"
+                                            >
+                                                Intermediate
+                                            </label>
+                                        </div>
+
+                                        <div className="form-check">
+                                            <input
+                                                className="form-check-input"
+                                                type="radio"
+                                                name="experience"
+                                                id="advanced"
+                                                value="advanced"
+                                                checked={experience === "advanced"}
+                                                onChange={(e) => setExperience(e.target.value)}
+                                            />
+
+                                            <label
+                                                className="form-check-label"
+                                                htmlFor="advanced"
+                                            >
+                                                Advanced
+                                            </label>
+                                        </div>
+
+                                    </div>
+                                </div> */}
 
                                 <div className="d-grid">
                                     <button

@@ -152,10 +152,16 @@ export async function SendMessage(message: string, portfolioId: string) {
 }
 
 export async function search_ticker(query: string) {
-    console.log(query);
-    const response = await fetch(`${API_URL}/find_ticker`, {
+    const response = await fetch(
+        `${API_URL}/find_ticker?query=${encodeURIComponent(query)}`,
+        {
+            method: "GET",
+        }
+    );
 
-    });
+    if (!response.ok) {
+        throw new Error("Failed to search for ticker");
+    }
 
-    return response;
+    return await response.json();
 }

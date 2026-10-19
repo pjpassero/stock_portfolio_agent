@@ -2,6 +2,7 @@
 import json
 import os
 import uuid
+import yfinance as yf
 from copy import deepcopy
 from pathlib import Path
 
@@ -36,6 +37,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "http://localhost:5174",
         "https://finlab.passerodevelopment.com",
     ],
     allow_credentials=True,
@@ -238,6 +240,24 @@ def chat(request:ChatRequest):
     return result["newest_response"]
 
 
+@app.get("/find_ticker")
+def find_ticker(query:str):
+    search = yf.Search(query, max_results=10)
+
+    results = []
+
+    for stock in search.quotes:
+        if stock.get("quoteType") not in ["EQUITY", "ETF"]:
+            continue
+
+        results.append({
+            "symbol": stock.get("symbol"),
+            "name": stock.get("shortname") or stock.get("longname"),
+            "exchange": stock.get("exchange"),
+            "type": stock.get("quoteType")
+        })
+
+    return results
    
 
     
