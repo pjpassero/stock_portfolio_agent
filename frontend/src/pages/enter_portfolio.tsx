@@ -24,7 +24,12 @@ export default function EnterPortfolio() {
     const [query, setSearchTicker] = useState("");
     const [user_uuid, setID] = useState("");
     const [tickerResults, setTickerResults] = useState<TickerResult[]>([]);
-    const [, setSelectedTicker] = useState<string>("");
+    const [riskTolerance, setRiskTolerance] = useState<number>(3);
+    const [sectorTolerance, setSectorTolerance] = useState<number>(3);
+    const [concentrationTolerance, setConcentrationTolerance] = useState<number>(3); const [, setSelectedTicker] = useState<string>("");
+    const [marketReaction, setMarketReaction] = useState<string>("hold");
+    const [investmentHorizon, setInvestmentHorizon] = useState<string>("5-10");
+
     const navigate = useNavigate();
 
 
@@ -593,79 +598,9 @@ export default function EnterPortfolio() {
 
                                     </div>
                                 </div>
-                                { /*<div className="mb-4">
 
-                                    <label className="form-label fw-semibold">
-                                        Questionnaire
-                                    </label>
+                                <hr className="my-4" />
 
-                                    <p className="text-muted small">
-                                        Select the level that best describes your investing
-                                        knowledge. This will help us curate the best explanations
-                                        for you.
-                                    </p>
-
-                                    <div className="d-flex flex-column flex-md-row gap-4">
-
-                                        <div className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="experience"
-                                                id="beginner"
-                                                value="beginner"
-                                                checked={experience === "beginner"}
-                                                onChange={(e) => setExperience(e.target.value)}
-                                            />
-
-                                            <label
-                                                className="form-check-label"
-                                                htmlFor="beginner"
-                                            >
-                                                Beginner
-                                            </label>
-                                        </div>
-
-                                        <div className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="experience"
-                                                id="intermediate"
-                                                value="intermediate"
-                                                checked={experience === "intermediate"}
-                                                onChange={(e) => setExperience(e.target.value)}
-                                            />
-
-                                            <label
-                                                className="form-check-label"
-                                                htmlFor="intermediate"
-                                            >
-                                                Intermediate
-                                            </label>
-                                        </div>
-
-                                        <div className="form-check">
-                                            <input
-                                                className="form-check-input"
-                                                type="radio"
-                                                name="experience"
-                                                id="advanced"
-                                                value="advanced"
-                                                checked={experience === "advanced"}
-                                                onChange={(e) => setExperience(e.target.value)}
-                                            />
-
-                                            <label
-                                                className="form-check-label"
-                                                htmlFor="advanced"
-                                            >
-                                                Advanced
-                                            </label>
-                                        </div>
-
-                                    </div>
-                                </div> */}
 
                                 <div className="d-grid">
                                     <button

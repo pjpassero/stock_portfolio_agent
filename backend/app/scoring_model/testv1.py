@@ -14,9 +14,9 @@ D_MAX = 0.50 #max drawdown
 HHI_MAX = 1.0
 HHI_MIN = 1 / 11
 N_TARGET = 30
-ALPHA = 0.40
-BETA = 0.30
-GAMMA = 0.30
+ALPHA = 0.40 #represents the volatility
+BETA = 0.30 #represents the concentration
+GAMMA = 0.30 #represents the drawdown
 LAMBDA = 0.50
 
 tickers = ['MU', 'NVDA', 'VOO', 'VXUS', 'CVX', 'KO', 'CASH']
