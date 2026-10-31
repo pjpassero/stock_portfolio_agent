@@ -24,11 +24,12 @@ export default function EnterPortfolio() {
     const [query, setSearchTicker] = useState("");
     const [user_uuid, setID] = useState("");
     const [tickerResults, setTickerResults] = useState<TickerResult[]>([]);
-    const [riskTolerance, setRiskTolerance] = useState<number>(3);
-    const [sectorTolerance, setSectorTolerance] = useState<number>(3);
-    const [concentrationTolerance, setConcentrationTolerance] = useState<number>(3); const [, setSelectedTicker] = useState<string>("");
-    const [marketReaction, setMarketReaction] = useState<string>("hold");
-    const [investmentHorizon, setInvestmentHorizon] = useState<string>("5-10");
+    //const [riskTolerance, setRiskTolerance] = useState<number>(3);
+    //const [sectorTolerance, setSectorTolerance] = useState<number>(3);
+    //const [concentrationTolerance, setConcentrationTolerance] = useState<number>(3); 
+    const [, setSelectedTicker] = useState<string>("");
+    //const [marketReaction, setMarketReaction] = useState<string>("hold");
+    //const [investmentHorizon, setInvestmentHorizon] = useState<string>("5-10");
 
     const navigate = useNavigate();
 
